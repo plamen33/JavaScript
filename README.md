@@ -1,2 +1,2 @@
 # Javascript
-Different Javascript projects
+This repository contains different Javascript projects.
