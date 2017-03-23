@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Web Painter</title>
+
+<style>
+#canvas
+{
+    border: 1px solid black;
+    margin: 10px 0 10px 0;
+    cursor: pointer;
+}
+#colors button
+{
+    width: 40px;
+	height: 40px;
+	border-radius: 100%;
+	margin-top: 0px;
+}
+
+#Clear
+{
+    position:absolute;
+    left:455px;
+}
+</style>
+
+
+<script>
+var arrow_touches = [];
+var canvas;
+var context;
+var down = false; //mouse is pressed
+var color = 'green'; //default drawing color
+var width = 5; // drawing width
+
+
+//calling window.onload to make sure the HTML is loaded
+window.onload = function() {
+    canvas = document.getElementById('canvas');
+    context = canvas.getContext('2d'); 
+    context.lineWidth = width;
+    
+    //handling mouse click and move events
+    canvas.addEventListener('mousemove', handleMove); 
+    canvas.addEventListener('mousedown', handleDown);
+    canvas.addEventListener('mouseup', handleUp);
+    
+    //handling mobile touch events
+    canvas.addEventListener("touchstart", handleStart, false);
+    canvas.addEventListener("touchend", handleEnd, false);
+    canvas.addEventListener("touchcancel", handleCancel, false);
+    canvas.addEventListener("touchleave", handleEnd, false);
+    canvas.addEventListener("touchmove", handleTouchMove, false);
+};
+function handleMove(e)
+{
+	xPosition = e.clientX-canvas.offsetLeft;
+	yPosition = e.clientY-canvas.offsetTop;
+	if(down == true)
+	{
+		context.lineTo(xPosition,yPosition); //create a line from old point to new one
+		context.strokeStyle = color;
+		context.stroke();
+	}
+}
+function handleDown() 
+{
+    down = true;
+    context.beginPath();
+    context.moveTo(xPosition, yPosition);
+}
+function handleUp() 
+{
+    down = false;
+}
+function handleStart(event) 
+{
+    var touches = event.changedTouches;
+    for(var i = 0; i < touches.length; i++) 
+    {
+	    if(isValidTouch(touches[i])) 
+	    {
+	        event.preventDefault();
+	        arrow_touches.push(copyTouch(touches[i]));
+	        context.beginPath();
+	        context.fillStyle = color;
+	        context.fill();
+        }
+    }
+}
+function handleTouchMove(event) 
+{
+    var touches = event.changedTouches;
+    var offset = findPosition(canvas);
+    for (var i = 0; i < touches.length; i++) 
+    {
+		if(isValidTouch(touches[i])) 
+		{
+	        event.preventDefault();
+	        var index = ongoingTouchIndexById(touches[i].identifier);
+    	    if (index >= 0) 
+    	    {
+    	        context.beginPath();
+    	        context.moveTo(arrow_touches[index].clientX-offset.x, arrow_touches[index].clientY-offset.y);
+    	        context.lineTo(touches[i].clientX-offset.x, touches[i].clientY-offset.y);
+    	        context.strokeStyle = color;
+    	        context.stroke();
+    	        
+    	        arrow_touches.splice(index, 1, copyTouch(touches[i]));
+    	    }   
+	    }
+    }
+}
+function handleEnd(event) 
+{
+    var touches = event.changedTouches;
+    var offset = findPosition(canvas);
+    for (var i = 0; i < touches.length; i++) 
+    {
+		if(isValidTouch(touches[i])) 
+		{
+		    event.preventDefault();
+	        var index = ongoingTouchIndexById(touches[i].identifier);
+	        if (index >= 0) 
+	        {
+	            context.lineWidth = 4;
+	            context.fillStyle = color;
+	            context.beginPath();
+	            context.moveTo(arrow_touches[index].clientX-offset.x, arrow_touches[index].clientY-offset.y);
+	            context.lineTo(touches[i].clientX-offset.x, touches[i].clientY-offset.y);
+	            arrow_touches.splice(i, 1);
+	        } 
+        }
+	}
+}
+function handleCancel(event) 
+{
+    event.preventDefault();
+    var touches = event.changedTouches;
+  
+    for (var i = 0; i < touches.length; i++) {
+	    arrow_touches.splice(i, 1);
+    }
+}
+function copyTouch(touch) 
+{
+    return {identifier: touch.identifier,clientX: touch.clientX,clientY: touch.clientY};
+}
+function ongoingTouchIndexById(idToFind) 
+{
+    for (var i = 0; i < arrow_touches.length; i++) {
+	    var id = arrow_touches[i].identifier;
+	    if (id == idToFind) {
+	        return i;
+	    }
+    }
+    return -1;
+}
+
+function isValidTouch(touch) 
+{
+    var cursorleft = 0, cursortop = 0;
+    var offset = 0;
+    
+	if (canvas.offsetParent) {
+		do {
+			cursorleft += canvas.offsetLeft;
+			cursortop += canvas.offsetTop;
+		} while (touch == canvas.offsetParent);
+	    
+	    offset = { x: cursorleft-document.body.scrollLeft, y: cursortop-document.body.scrollTop };
+	}
+    
+    if(touch.clientX-offset.x > 0 &&
+	        touch.clientX-offset.x < parseFloat(canvas.width) &&
+	            touch.clientY-offset.y >0 &&
+	                touch.clientY-offset.y < parseFloat(canvas.height)) {
+        return true;
+    }
+	else 
+	{
+	    return false;
+	}
+}
+function findPosition(obj) 
+{
+	var cursorleft = 0, cursortop = 0;
+	if (obj.offsetParent) 
+	{
+		do {
+			cursorleft += obj.offsetLeft;
+			cursortop += obj.offsetTop;
+		} while (obj == obj.offsetParent);
+
+		return { x: cursorleft-document.body.scrollLeft, y: cursortop-document.body.scrollTop };
+	}
+}
+
+</script>
+</head>
+    <body>
+	    <canvas id='canvas' width='333' height='300'></canvas>
+    </body>
+</html>
