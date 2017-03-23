@@ -17,7 +17,15 @@
 	border-radius: 100%;
 	margin-top: 0px;
 }
-
+#GreenYellow 
+{
+    background: GreenYellow;
+}
+#color
+{
+    margin-top:12px;
+    border-radius:25px;
+}
 #Clear
 {
     position:absolute;
@@ -157,7 +165,10 @@ function ongoingTouchIndexById(idToFind)
     }
     return -1;
 }
-
+function clearCanvas() 
+{
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
 function isValidTouch(touch) 
 {
     var cursorleft = 0, cursortop = 0;
@@ -200,6 +211,12 @@ function findPosition(obj)
 </script>
 </head>
     <body>
+		 <div id='colors'>
+	        <button id='GreenYellow' onclick='changeColor("GreenYellow")' ontouchstart='changeColor("GreenYellow")'></button>
+	    </div>
 	    <canvas id='canvas' width='333' height='300'></canvas>
+		<div>
+            <button id='Clear' onclick='clearCanvas()'>Clear</button>
+        </div>
     </body>
 </html>
