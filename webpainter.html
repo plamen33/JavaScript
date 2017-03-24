@@ -21,6 +21,42 @@
 {
     background: GreenYellow;
 }
+#moccasin  
+{
+    background: moccasin;
+}
+#silver  
+{
+    background: silver;
+}
+#skyblue  
+{
+    background: skyblue;
+}
+#mediumpurple  
+{
+    background: mediumpurple;
+}
+#orange 
+{
+    background: orange;
+}
+#green 
+{ 
+    background: green;
+}
+#blue 
+{
+    background: blue;
+}
+#red
+{
+    background: red;
+}
+#black 
+{
+    background: black;
+}
 #color
 {
     margin-top:12px;
@@ -29,7 +65,7 @@
 #Clear
 {
     position:absolute;
-    left:297px;
+    left:377px;
 }
 </style>
 
@@ -40,7 +76,7 @@ var canvas;
 var context;
 var down = false; //mouse is pressed
 var color = 'green'; //default drawing color
-var width = 5; // drawing width
+var width = 3; // drawing width
 
 
 //calling window.onload to make sure the HTML is loaded
@@ -216,9 +252,18 @@ function findPosition(obj)
 </head>
     <body>
 		 <div id='colors'>
-	        <button id='GreenYellow' onclick='changeColor("GreenYellow")' ontouchstart='changeColor("GreenYellow")'></button>
+			<button id='GreenYellow' onclick='changeColor("GreenYellow")' ontouchstart='changeColor("GreenYellow")'></button>
+			<button id='moccasin' onclick='changeColor("moccasin")' ontouchstart='changeColor("moccasin")'></button>
+			<button id='orange' onclick='changeColor("orange")' ontouchstart='changeColor("orange")'></button>
+			<button id='skyblue' onclick='changeColor("skyblue")' ontouchstart='changeColor("skyblue")'></button>
+			<button id='green' onclick='changeColor("green")' ontouchstart='changeColor("green")'></button>
+			<button id='silver' onclick='changeColor("silver")' ontouchstart='changeColor("silver")'></button>
+			<button id='mediumpurple' onclick='changeColor("mediumpurple")' ontouchstart='changeColor("mediumpurple")'></button>
+		    <button id='blue' onclick='changeColor("blue")' ontouchstart='changeColor("blue")'></button>
+		    <button id='red' onclick='changeColor("red")' ontouchstart='changeColor("red")'></button>
+		    <button id='black' onclick='changeColor("black")' ontouchstart='changeColor("black")'></button>
 	    </div>
-	    <canvas id='canvas' width='333' height='300'></canvas>
+	    <canvas id='canvas' width='500' height='433'></canvas>
 		<div>
             <button id='Clear' onclick='clearCanvas()'>Clear</button>
         </div>
