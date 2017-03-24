@@ -247,6 +247,13 @@ function findPosition(obj)
 		return { x: cursorleft-document.body.scrollLeft, y: cursortop-document.body.scrollTop };
 	}
 }
+function newColor()
+{
+    everyColor = document.getElementById('color');
+    cv = document.getElementById('colorValue');
+    cv.innerHTML = "color: " + everyColor.value;
+    color = everyColor.value;
+}
 
 </script>
 </head>
@@ -257,6 +264,7 @@ function findPosition(obj)
 			<button id='orange' onclick='changeColor("orange")' ontouchstart='changeColor("orange")'></button>
 			<button id='skyblue' onclick='changeColor("skyblue")' ontouchstart='changeColor("skyblue")'></button>
 			<button id='green' onclick='changeColor("green")' ontouchstart='changeColor("green")'></button>
+			<input id='color' type="color" onchange='changeColor("value")' ontouchstart='changeColor("value")'/>
 			<button id='silver' onclick='changeColor("silver")' ontouchstart='changeColor("silver")'></button>
 			<button id='mediumpurple' onclick='changeColor("mediumpurple")' ontouchstart='changeColor("mediumpurple")'></button>
 		    <button id='blue' onclick='changeColor("blue")' ontouchstart='changeColor("blue")'></button>
@@ -265,6 +273,8 @@ function findPosition(obj)
 	    </div>
 	    <canvas id='canvas' width='500' height='433'></canvas>
 		<div>
+		    <button onclick='newColor()'>GO</button>
+            <span id='colorValue'>color:</span>
             <button id='Clear' onclick='clearCanvas()'>Clear</button>
         </div>
     </body>
