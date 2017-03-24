@@ -4,6 +4,33 @@
 <title>Web Painter</title>
 
 <style>
+ccl {color:green;}
+h3 {
+        
+ font-family: "Adobe Caslon Pro", "Hoefler Text", Georgia, Garamond, Times, serif;
+ letter-spacing:0.1em;
+ text-align:relative;
+ margin: 12px auto;
+ text-transform: lowercase;
+ line-height: 145%;
+ font-size: 17pt;
+ font-variant: small-caps;
+        }
+h2 {
+  text-shadow: 0 1px 0 #ccc,
+               0 2px 0 #c9c9c9,
+               0 3px 0 #bbb,
+               0 4px 0 #b9b9b9,
+               0 5px 0 #aaa,
+               0 6px 1px rgba(0,0,0,.1),
+               0 0 5px rgba(0,0,0,.1),
+               0 1px 3px rgba(0,0,0,.3),
+               0 3px 5px rgba(0,0,0,.2),
+               0 5px 10px rgba(0,0,0,.25),
+               0 10px 10px rgba(0,0,0,.2),
+               0 20px 20px rgba(0,0,0,.15);
+			   color: grey;
+}
 #canvas
 {
     border: 1px solid black;
@@ -64,6 +91,12 @@
 }
 #Clear
 {
+    position:absolute;
+    left:455px;
+}
+#Rubber
+{
+    canvas:crosshair;
     position:absolute;
     left:377px;
 }
@@ -254,11 +287,16 @@ function newColor()
     cv.innerHTML = "color: " + everyColor.value;
     color = everyColor.value;
 }
+function rubberMode() 
+{
+    color = 'white';
+}
 
 </script>
 </head>
     <body>
 		 <div id='colors'>
+		  <ccl><h3>Javascript Web Painter</h3></ccl>
 			<button id='GreenYellow' onclick='changeColor("GreenYellow")' ontouchstart='changeColor("GreenYellow")'></button>
 			<button id='moccasin' onclick='changeColor("moccasin")' ontouchstart='changeColor("moccasin")'></button>
 			<button id='orange' onclick='changeColor("orange")' ontouchstart='changeColor("orange")'></button>
@@ -275,7 +313,13 @@ function newColor()
 		<div>
 		    <button onclick='newColor()'>GO</button>
             <span id='colorValue'>color:</span>
+			<button id='Rubber' onclick='rubberMode()'>Rubber</button>
             <button id='Clear' onclick='clearCanvas()'>Clear</button>
+			<br/>
+		<text>Choose a predefined color</text><br/>
+		<text>Otherwise choose any color, to activate click on GO button.</text>
+		<br/>
+		<h2>&copy; Software Development Project</h2>
         </div>
     </body>
 </html>
