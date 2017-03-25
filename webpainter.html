@@ -310,8 +310,9 @@ function changeWidth()
 }
 function saveImage() 
 {  
-    var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
-    window.location.href=image; // it will save 
+   var saveImage = document.getElementById("saveImage");
+   var image = document.getElementById("canvas").toDataURL("image/png").replace("image/png", "image/octet-stream");
+   saveImage.setAttribute("href", image);
 }
 
 </script>
@@ -339,10 +340,10 @@ function saveImage()
             <button id='Clear' onclick='clearCanvas()'>Clear</button>
 			<br/>
         Choose drawing width:
-	    <input id="dotValue" type="range" min="1" max="14" onclick="changeWidth()">
+	    <input id="dotValue" type="range" min="1" max="14" value="3" onclick="changeWidth()">
 		<br/>
 		<div>
-	    <button id="saveImage" onclick="saveImage()">Save image</button>
+	    <a id="saveImage" download="picture.png"><button type="button" onClick="saveImage()">Save as Image</button></a>
 		</div>
 		<text>Choose a predefined color</text><br/>
 		<text>Otherwise choose any color, to activate click on GO button.</text>
