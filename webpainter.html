@@ -234,14 +234,6 @@ function ongoingTouchIndexById(idToFind)
     }
     return -1;
 }
-function changeColor(new_color) 
-{
-    color = new_color;
-}
-function clearCanvas() 
-{
-    context.clearRect(0, 0, canvas.width, canvas.height);
-}
 function isValidTouch(touch) 
 {
     var cursorleft = 0, cursortop = 0;
@@ -280,16 +272,37 @@ function findPosition(obj)
 		return { x: cursorleft-document.body.scrollLeft, y: cursortop-document.body.scrollTop };
 	}
 }
+function changeColor(new_color) 
+{
+    color = new_color;
+	document.getElementById("canvas").style.cursor = "pointer";
+}
+function clearCanvas() 
+{
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
 function newColor()
 {
     everyColor = document.getElementById('color');
     cv = document.getElementById('colorValue');
     cv.innerHTML = "color: " + everyColor.value;
     color = everyColor.value;
+	document.getElementById("canvas").style.cursor = "pointer";
 }
 function rubberMode() 
 {
     color = 'white';
+	document.getElementById("canvas").style.cursor = "crosshair";
+}
+function changeWidth() 
+{
+    var inputValue;
+	inputValue = document.getElementById("dotValue").value;
+	
+	width = inputValue;
+	
+	context.lineWidth = width;
+    
 }
 
 </script>
@@ -316,6 +329,9 @@ function rubberMode()
 			<button id='Rubber' onclick='rubberMode()'>Rubber</button>
             <button id='Clear' onclick='clearCanvas()'>Clear</button>
 			<br/>
+        Choose drawing width:
+	    <input id="dotValue" type="range" min="1" max="14" onclick="changeWidth()">
+		<br/>
 		<text>Choose a predefined color</text><br/>
 		<text>Otherwise choose any color, to activate click on GO button.</text>
 		<br/>
