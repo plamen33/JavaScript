@@ -100,8 +100,12 @@ h2 {
     position:absolute;
     left:377px;
 }
+#saveImage
+{
+    position:absolute;
+    left:400px;
+}
 </style>
-
 
 <script>
 var arrow_touches = [];
@@ -304,6 +308,11 @@ function changeWidth()
 	context.lineWidth = width;
     
 }
+function saveImage() 
+{  
+    var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
+    window.location.href=image; // it will save 
+}
 
 </script>
 </head>
@@ -332,6 +341,9 @@ function changeWidth()
         Choose drawing width:
 	    <input id="dotValue" type="range" min="1" max="14" onclick="changeWidth()">
 		<br/>
+		<div>
+	    <button id="saveImage" onclick="saveImage()">Save image</button>
+		</div>
 		<text>Choose a predefined color</text><br/>
 		<text>Otherwise choose any color, to activate click on GO button.</text>
 		<br/>
