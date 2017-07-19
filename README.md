@@ -1,5 +1,5 @@
 ### Projects can be tested live from the links below:
 
-JavaScript webpainter, try it here: [JS webpainter](https://plamen33.github.io/Javascript/webpainter.html)
+[JavaScript webpainter](https://plamen33.github.io/Javascript/webpainter.html)
 
-Simple monthly calendar, try it here:  [JS monthly calendar](https://plamen33.github.io/Javascript/Monthly%20Calendar%20with%20Javascript.html)
+[Monthly calendar](https://plamen33.github.io/Javascript/Monthly%20Calendar%20with%20Javascript.html)
