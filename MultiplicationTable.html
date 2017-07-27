@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- CSS Code -->
+<style>
+table.GeneratedTable {
+  width: 77%;
+  background-color: #ddf9a4;
+  border-collapse: collapse;
+  border-width: 3px;
+  border-color: #3fc033;
+  border-style: solid;
+  color: #000000;
+  font-size:17px;
+}
+
+table.GeneratedTable td, table.GeneratedTable th {
+  border-width: 2px;
+  border-color: #3fc033;
+  border-style: solid;
+  padding: 3px;
+}
+
+table.GeneratedTable thead {
+  background-color: #ffcc33;
+}
+
+/* #Emerald Flat Button
+==================================================*/
+.emerald-flat-button {
+  position: relative;
+  vertical-align: top;
+  width: 9%;
+  height: 27px;
+  padding: 0;
+  font-size: 17px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #2ecc71;
+  border: 0;
+  border-bottom: 2px solid #28be68;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -2px #28be68;
+  box-shadow: inset 0 -2px #28be68;
+}
+.emerald-flat-button:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+</style>
+ <meta charset="UTF-8">
+    <title>Multiplication Table</title>
+
+    <script>
+	
+function MultiplicationTable([rowsCols]) {
+    rowsCols = Number(rowsCols);
+    let html = '<table border="3" class="GeneratedTable">\n';
+    for (var row = 0; row <= rowsCols; row++) {
+        html += '\t<tr>';
+        for (var col = 0; col <= rowsCols; col++) {
+            if (row == 0) {
+			
+                if (col == 0) {
+				   
+                    html += '<th>x</th>';
+					
+                } else {
+				    
+                    html += `<th>${col}</th>`;
+					
+                }
+			
+            } else {
+                if (col == 0) {
+                    html += `<th>${row}</th>`;
+                } else {
+                    html += `<td>${row * col}</td>`;
+                }
+            }
+        }
+
+        html += '</tr>\n';
+    }
+
+    html += '</table>';
+
+    return html;
+}       
+
+    </script>
+</head>
+
+<body>
+<div  style="color:olive;font-size:24px;">Multiplication Table Generator</div >
+</br>
+<div  style="color:black;font-size:21px;">Enter a number:</div >
+<input type="text" id="field1" name="number" value="10" style="font-size:17px">
+
+<button onclick="showTable()" class="emerald-flat-button">Enter</button>
+</br>
+</br>
+</br>
+<div id="statement" style="color:olive;font-size:21px;"></div>
+<p id="table"></p>
+<script>
+  function showTable(){
+     let num = document.getElementById("field1").value;
+     let html = MultiplicationTable([num]);
+     //document.body.innerHTML = html;
+	 document.getElementById("statement").innerHTML = "Result Multiplication table: ";
+	 document.getElementById("table").innerHTML = html;
+  }
+</script>
+ </br>
+<div  style="color:#337712;font-size:14px;">Powered by JavaScript</div >
+
+</body>
+
+</html>
