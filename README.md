@@ -6,4 +6,4 @@
 
 [Multiplication Table](https://plamen33.github.io/Javascript/MultiplicationTable.html)
  	
-[Multiplication Table](https://plamen33.github.io/Javascript/BookLibrary/books.html)
+[Book Library Project](https://plamen33.github.io/Javascript/BookLibrary/books.html)
