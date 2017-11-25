@@ -1,0 +1,66 @@
+#menu {
+    background: #ffdc7b;
+    text-align: center;
+    padding: 5px;
+    line-height: 1.5;
+    border-radius: 3px;
+    font-size: 1.2em;
+}
+
+#menu a {
+    display: none;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+#menu a:hover {
+    background: #e2bb3d;
+}
+
+main > section {   /*> means direct child -> section is direct child of main*/
+    display: none;
+}
+
+section h1 {
+    margin: 10px 0px;
+    font-size: 1.2em;
+}
+
+table th {
+    background: #d1ba49;
+    padding: 10px;
+}
+
+table td {
+    padding: 5px 10px;
+    background: #fdffb9;
+}
+
+#infoBox, #errorBox, #loadingBox {
+    width: 80%;
+    margin: 10px auto;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+#loadingBox {
+    background: #7CB3E9;
+}
+#infoBox {
+    background: #393;
+}
+#errorBox {
+    background: #F50;
+}
+
+
+footer {
+    background: #ffdc7b;
+    padding: 5px 10px;
+    font-size: 1.0em; /* this means 80% from the original*/
+    text-align: center;
+    border-radius: 3px;
+}
