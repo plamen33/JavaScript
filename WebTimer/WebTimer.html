@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebTimer</title>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"
+            integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+            crossorigin="anonymous"></script>
+    <!--snow effect-->
+    <script src="scripts/jquery.snow.js"></script>
+    <!--snow effect-->
+    <style>
+        #timer {
+            font-size: 5em;
+            color: #fff;
+            font-weight: bold;
+            font-family: Helvetica;
+            text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c7c8, 0 3px 0 #bbb, 0 4px 0 #b7b8b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1),
+            0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+        }
+        #synchro {
+            font-size: 1.7em;
+        }
+        #linkLogin {
+            font-size: 1.2em;
+        }
+        #linkLogout {
+            font-size: 1.2em;
+        }
+
+        /*button css*/
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 7px 17px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+        }
+        .button2:hover {
+            box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+        }
+
+        /*dropdown button css:*/
+        .dropbtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropbtn:hover, .dropbtn:focus {
+            background-color: #3e8e41;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            overflow: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown a:hover {background-color: #f1f1f1}
+
+        .show {display:block;}
+        /*dropdown button css:*/
+
+        /*snow effect:*/
+        .snowflake {
+            -webkit-animation:spin 4s linear infinite;
+            -moz-animation:spin 4s linear infinite;
+            animation:spin 4s linear infinite;
+        }
+        @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+        @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+        @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+        /*snow effect:*/
+    </style>
+</head>
+<body>
+<!--snow effect-->
+<div id="snow"></div>
+<!--snow effect-->
+<div  style="color:olive;font-size:24px;">When Tsetso is coming Christmas clock</div >
+<div  style="font-size:33px;
+        font-family: times, Garamond, times-roman, georgia, serif;
+ color: forestgreen;
+ margin: 0;
+ padding: 0px 0px 5px 0px;
+ line-height: 44px;
+ letter-spacing: -2px;
+ font-weight: bold;
+
+">Tsetso should be here after: </div >
+<img src="images/image3.jpg" align="right" alt="image" width="333" height="209">
+<div id="timer">
+    <span id="hours" class="timer">00</span>:
+    <span id="minutes" class="timer">00</span>:
+    <span id="seconds" class="timer">00</span>
+</div>
+<div id="synchro">
+    <img src="images/loading.gif" width="144" height="144" alt="image" >
+</div>
+<button class="button button2" href="#" id="linkLogin"> Login </button>
+<button class="button button2" href="#" id="linkLogout"> Logout </button>
+
+<main>
+    <section id="viewLogin">
+        <h1>Please login to manage the clock</h1>
+        <form id="formLogin">
+            <div>Username:</div>
+            <div><input type="text" id="userLogin" required/></div>
+            <div>Password:</div>
+            <div><input type="password" id="loginPassword" required/></div>
+            </br>
+            <div><input type="submit" value="Login"/>
+                <button type="button" onclick="javascript:logoutUser()">Close</button>
+
+            </div>
+        </form>
+    </section>
+
+    <section id="showCommandButtons">
+        <p> </p>
+        <div>
+          You have logged to the Admin panel. It acts, as a server.
+        </div>
+        <div>
+         <button id="start-timer">Start</button>
+         <button id="stop-timer">Stop</button>
+         <button id="clear-timer">Clear</button>
+        </div>
+        <p> </p>
+        <div class="dropdown">
+            <p>Tsetso is coming in how much minutes: </p>
+            <button onclick="dropdownFunction()" class="dropbtn">Choose time</button>
+            <div id="divDropdown" class="dropdown-content">
+                <a id="twominutes">In 2 minutes</a>
+                <a id="threeminutes">In 3 minutes</a>
+                <a id="fiveminutes">In 5 minutes</a>
+            </div>
+            <p> </p>
+            <p>Set another time limit in seconds: </p>
+            <div>
+                <input type="number" id="minutesValue" value="7" min="0" max="7777">
+                <button id="anyMinutes">Set seconds</button>
+            </div>
+        </div>
+    </section>
+</main>
+<second>
+    <section id="viewLogout">
+    </section>
+</second>
+<script>
+    // initially we hide the timer div
+    $('#timer').hide();
+
+    // Clear user authenticator information at startup
+    sessionStorage.clear();
+    showHideMenuLinks();
+    $('main > section').hide();
+    // Bind the navigation menu links
+    $("#linkLogin").click(showLoginView);
+    $("#linkLogout").click(logoutUser); /// when we click on the Logout link activate the logout function and do the logout itself
+    // Bind the form submit buttons
+    $("#formLogin").submit(function(event) {
+        event.preventDefault()
+        loginUser();
+    });
+
+    const kinveyBaseUrl = "https://baas.kinvey.com/";
+    const kinveyAppKey = "kid_HJf0e7xXG";
+    const kinveyAppCode = "91868557cd784c26898dc882e4907e0f";
+    const kinveyBooksUrl = "https://baas.kinvey.com/appdata/" + kinveyAppKey + '/timer';
+
+    const base64auth = btoa(kinveyAppKey + ':' + kinveyAppCode);
+    const authHeaders = {
+        "Authorization": "Basic " + base64auth
+    };
+
+
+    let time;
+    let idOfTime;
+    let isRunning;
+    let intervalId;
+    getTime();
+    let logged = false;
+
+    // get time from DB:
+    function getTime(){
+        $.ajax({
+            method: 'GET',
+            url: kinveyBooksUrl,
+            headers:  {"Authorization": "Basic cmVhZGVyOnJlYWRlcg=="},
+            success: getTimeFromDB
+        });
+    }
+
+    function getTimeFromDB(timer){
+        time =  timer[0].seconds;
+        idOfTime = timer[0]._id;
+        let isRunningString = timer[0].isrunning;
+        isRunning = JSON.parse(isRunningString);
+        console.log(idOfTime);
+        sessionStorage.clear();
+        $('#timer').show();
+        $('#synchro').hide();
+        // if server is running
+        if(isRunning && logged ==false){
+            $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
+            $('#minutes').text(("0" + Math.trunc((time/60)%60)).slice(-2));
+            $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
+            getTime();
+        // just show the actual time:
+        } else{
+            $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
+            $('#minutes').text(("0" + Math.trunc((time/60)%60)).slice(-2));
+            $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
+        }
+    }
+    //// end of get time from DB section
+
+    // user login and password
+    let loginUs = "";
+    let loginPa = "";
+
+    function showHideMenuLinks() {
+        if (sessionStorage.getItem('authToken') == null) {
+            // No logged in user
+            $("#linkLogin").show();
+            $("#linkLogout").hide();
+        } else {
+            // We have logged in user
+            $("#linkLogin").hide();
+            $("#linkLogout").show();
+        }
+    }
+
+    function showView(viewName) {
+        // Hide all views and show the selected view only
+        $('main > section').hide();
+        $('#' + viewName).show();
+    }
+    function showLoginView() {
+        showView('viewLogin');
+        $('#formLogin').trigger('reset');
+    }
+
+    /// login function
+    function loginUser() {
+        const kinveyLoginUrl = kinveyBaseUrl + "user/" + kinveyAppKey + "/login";
+        const kinveyAuthHeaders = {
+            'Authorization': 'Basic ' + btoa(kinveyAppKey + ":" + kinveyAppCode),
+        };
+        let userData = {
+            username: $('#userLogin').val(),
+            password: $('#loginPassword').val()
+        };
+        loginUs = $('#userLogin').val();
+        loginPa = $('#loginPassword').val();
+        $.ajax({
+            method: "POST",
+            url: kinveyLoginUrl,
+            headers: kinveyAuthHeaders,
+            data: userData,
+            success: loginSuccess
+           // error: handleAjaxError
+        });
+
+        /// if you log successfully:
+        function loginSuccess(userInfo) {
+            logged = true;
+            saveAuthInSession(userInfo);
+            showHideMenuLinks();
+            showView('viewLogout');
+            showView('showCommandButtons');
+            const loginAuthorization = btoa(loginUs + ':' + loginPa);
+            const loginHeaders = {
+                "Authorization": "Basic " + loginAuthorization
+            };
+
+            if(isRunning && logged){
+                intervalId = setInterval(incrementTime, 1000);
+            }
+            // below we describe the command buttons from admin panel:
+            $('#start-timer').on('click', function(){
+                console.log(isRunning);
+                if(!isRunning){
+                    intervalId = setInterval(incrementTime, 1000);
+                    isRunning = true;
+                }
+            });
+            $('#stop-timer').on('click', function(){
+
+                clearInterval(intervalId);
+                isRunning = false;
+                let timeString = ""+time;
+                let changeTime ={seconds: timeString, isrunning: false};
+                $.ajax({
+                    method: 'PUT',
+                    url: kinveyBooksUrl + "/" + idOfTime,
+                    headers: loginHeaders,
+                    data: changeTime
+                });
+            });
+            $('#clear-timer').on('click', function(){
+                //clearInterval(intervalId);
+                time = 0;
+                let timeString = ""+time;
+                let changeTime ={seconds: timeString, isrunning: isRunning};
+                $.ajax({
+                    method: 'PUT',
+                    url: kinveyBooksUrl + "/" + idOfTime,
+                    headers: loginHeaders,
+                    data: changeTime
+                });
+                //isRunning = false;
+                $('#hours').text("00");
+                $('#minutes').text("00");
+                $('#seconds').text("00");
+            });
+
+            // this is the main clock function:
+            function incrementTime () {
+                time--;
+                if(time < 0){
+                    $('#clear-timer').click();
+                }
+                console.log(idOfTime);
+                let timeString = ""+time;
+                console.log(timeString);
+                let changeTime ={seconds: timeString, isrunning: true};
+                $.ajax({
+                    method: 'PUT',
+                    url: kinveyBooksUrl + "/" + idOfTime,
+                    headers: loginHeaders,
+                    data: changeTime
+                });
+
+                $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
+                $('#minutes').text(("0" + Math.trunc((time/60)%60)).slice(-2));
+                $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
+            }
+
+            // below are the three values from Choose time dropdown button: you can set 2,3 and 5 minutes:
+            $('#twominutes').on('click', function(){
+                //clearInterval(intervalId);
+                time = 120;
+                let timeString = ""+time;
+                let changeTime ={seconds: timeString, isrunning: isRunning};
+                $.ajax({
+                    method: 'PUT',
+                    url: kinveyBooksUrl + "/" + idOfTime,
+                    headers: loginHeaders,
+                    data: changeTime
+                });
+                $('#hours').text("00");
+                $('#minutes').text("02");
+                $('#seconds').text("00");
+            });
+            $('#threeminutes').on('click', function(){
+                //clearInterval(intervalId);
+                time = 180;
+                let timeString = ""+time;
+                let changeTime ={seconds: timeString, isrunning: isRunning};
+                $.ajax({
+                    method: 'PUT',
+                    url: kinveyBooksUrl + "/" + idOfTime,
+                    headers: loginHeaders,
+                    data: changeTime
+                });
+                $('#hours').text("00");
+                $('#minutes').text("03");
+                $('#seconds').text("00");
+            });
+            $('#fiveminutes').on('click', function(){
+                //clearInterval(intervalId);
+                time = 300;
+                let timeString = ""+time;
+                let changeTime ={seconds: timeString, isrunning: isRunning};
+                $.ajax({
+                    method: 'PUT',
+                    url: kinveyBooksUrl + "/" + idOfTime,
+                    headers: loginHeaders,
+                    data: changeTime
+                });
+                $('#hours').text("00");
+                $('#minutes').text("05");
+                $('#seconds').text("00");
+            });
+
+            // this is the set seconds field :
+            $('#anyMinutes').on('click', function(){
+                //clearInterval(intervalId);
+                time = $('#minutesValue').val();
+                let timeString = ""+time;
+                let changeTime ={seconds: timeString, isrunning: isRunning};
+                $.ajax({
+                    method: 'PUT',
+                    url: kinveyBooksUrl + "/" + idOfTime,
+                    headers: loginHeaders,
+                    data: changeTime
+                });
+                $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
+                $('#minutes').text(("0" + Math.trunc((time/60)%60)).slice(-2));
+                $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
+            });
+
+        }
+        function saveAuthInSession(userInfo) {
+            let userAuth = userInfo._kmd.authtoken;
+            sessionStorage.setItem('authToken', userAuth);
+//            let userId = userInfo._id;
+//            sessionStorage.setItem('userId', userId);
+        }
+    }
+
+    // Choose time dropdown button section of code: ////////////////////////////////
+    /* When the user clicks on the button,
+     toggle between hiding and showing the dropdown content */
+    function dropdownFunction() {
+        document.getElementById("divDropdown").classList.toggle("show");
+    }
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+     ////////////////////////////////////////////////////////////
+
+    function logoutUser() {
+        logged = false;
+        sessionStorage.clear();
+        showHideMenuLinks();
+        $('main > section').hide();
+    }
+    /*snow effect:*/
+    jQuery(function() {
+        jQuery("#snow").snow({
+            intensity: 40,
+            sizeRange: [12, 30],
+            opacityRange: [0.4, 1],
+            driftRange: [10, 20],
+            speedRange: [55, 120]
+        });
+    });
+    /*snow effect:*/
+
+</script>
+</body>
+</html>
