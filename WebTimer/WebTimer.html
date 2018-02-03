@@ -104,7 +104,10 @@
 <!--snow effect-->
 <div id="snow"></div>
 <!--snow effect-->
-<div  style="color:olive;font-size:24px;">When Angel will come Christmas clock</div >
+<div  style="color:olive;font-size:24px;">When
+    <span id="nameOne" class="timer">...</span>
+    will come Christmas clock
+</div >
 <div  style="font-size:33px;
         font-family: times, Garamond, times-roman, georgia, serif;
  color: forestgreen;
@@ -113,8 +116,10 @@
  line-height: 44px;
  letter-spacing: -2px;
  font-weight: bold;
-
-">Angel will possibly come after: </div >
+">
+    <span id="nameTwo" class="timer">...</span>
+    will possibly come after:
+</div >
 <img src="images/image3.jpg" align="right" alt="image" width="333" height="209">
 <div id="timer">
     <span id="hours" class="timer">00</span>:
@@ -138,7 +143,6 @@
             </br>
             <div><input type="submit" value="Login"/>
                 <button type="button" onclick="javascript:logoutUser()">Close</button>
-
             </div>
         </form>
     </section>
@@ -155,7 +159,8 @@
         </div>
         <p> </p>
         <div class="dropdown">
-            <p>Tsetso is coming in how much minutes: </p>
+            <p><span id="nameThree" class="timer">...</span>
+                is coming in how much minutes: </p>
             <button onclick="dropdownFunction()" class="dropbtn">Choose time</button>
             <div id="divDropdown" class="dropdown-content">
                 <a id="twominutes">In 2 minutes</a>
@@ -165,8 +170,14 @@
             <p> </p>
             <p>Set another time limit in seconds: </p>
             <div>
-                <input type="number" id="minutesValue" value="7" min="0" max="7777">
+                <input type="number" id="minutesValue" value="7" min="0" max="77733">
                 <button id="anyMinutes">Set seconds</button>
+            </div>
+            <p> </p>
+            <p>Set name for the person you are waiting: </p>
+            <div>
+                <input type="text" id="nameValue">
+                <button id="setName">Set name</button>
             </div>
         </div>
     </section>
@@ -201,14 +212,18 @@
     const authHeaders = {
         "Authorization": "Basic " + base64auth
     };
-
-
+    // time parameters
     let time;
     let idOfTime;
     let isRunning;
     let intervalId;
     getTime();
+
     let logged = false;
+    // name parameters
+    let name;
+    getName();
+    let idOfName;
 
     // get time from DB:
     function getTime(){
@@ -243,6 +258,27 @@
         }
     }
     //// end of get time from DB section
+
+    ///// get Name from DB section:
+    // get Name from DB:
+    function getName(){
+        $.ajax({
+            method: 'GET',
+            url: kinveyBooksUrl,
+            headers:  {"Authorization": "Basic cmVhZGVyOnJlYWRlcg=="},
+            success: getNameFromDB
+        });
+    }
+
+    function getNameFromDB(timer){
+        idOfName = timer[1]._id;
+        name =  timer[1].seconds;
+        console.log(name);
+        $('#nameOne').text(name);
+        $('#nameTwo').text(name);
+        $('#nameThree').text(name);
+    }
+    //// end of get Name from DB section
 
     // user login and password
     let loginUs = "";
@@ -429,8 +465,24 @@
                 $('#minutes').text(("0" + Math.trunc((time/60)%60)).slice(-2));
                 $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
             });
+            // When admin user clicks "Set name" change the name of the user:
+            $('#setName').on('click', function(){
+                name = $('#nameValue').val();
+                let nameString = name;
+                let changeName ={seconds: nameString};
+                $.ajax({
+                    method: 'PUT',
+                    url: kinveyBooksUrl + "/" + idOfName,
+                    headers: loginHeaders,
+                    data: changeName
+                });
+                // change the name immediately at your admin timer screen
+                $('#nameOne').text(nameString);
+                $('#nameTwo').text(nameString);
+                $('#nameThree').text(nameString);
+            });
 
-        }
+        } // end of loginSuccess function
         function saveAuthInSession(userInfo) {
             let userAuth = userInfo._kmd.authtoken;
             sessionStorage.setItem('authToken', userAuth);
