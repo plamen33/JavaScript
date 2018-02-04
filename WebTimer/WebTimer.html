@@ -104,9 +104,8 @@
 <!--snow effect-->
 <div id="snow"></div>
 <!--snow effect-->
-<div  style="color:olive;font-size:24px;">When
-    <span id="nameOne" class="timer">...</span>
-    will come Christmas clock
+<div  style="color:olive;font-size:24px;">
+    <span id="stringOne" class="timer">WebTimer data is loading...</span>
 </div >
 <div  style="font-size:33px;
         font-family: times, Garamond, times-roman, georgia, serif;
@@ -117,8 +116,7 @@
  letter-spacing: -2px;
  font-weight: bold;
 ">
-    <span id="nameTwo" class="timer">...</span>
-    will possibly come after:
+    <span id="stringTwo" class="timer">Please wait...</span>
 </div >
 <img src="images/image3.jpg" align="right" alt="image" width="333" height="209">
 <div id="timer">
@@ -159,8 +157,7 @@
         </div>
         <p> </p>
         <div class="dropdown">
-            <p><span id="nameThree" class="timer">...</span>
-                is coming in how much minutes: </p>
+            <p>Set WebTimer parameters: </p>
             <button onclick="dropdownFunction()" class="dropbtn">Choose time</button>
             <div id="divDropdown" class="dropdown-content">
                 <a id="twominutes">In 2 minutes</a>
@@ -174,10 +171,15 @@
                 <button id="anyMinutes">Set seconds</button>
             </div>
             <p> </p>
-            <p>Set name for the person you are waiting: </p>
+            <p>Set first line title: </p>
             <div>
-                <input type="text" id="nameValue">
-                <button id="setName">Set name</button>
+                <input type="text" id="stringOneValue">
+                <button id="setStringOne">Set first title</button>
+            </div>
+            <p>Set second line title: </p>
+            <div>
+                <input type="text" id="stringTwoValue">
+                <button id="setStringTwo">Set second title</button>
             </div>
         </div>
     </section>
@@ -220,10 +222,12 @@
     getTime();
 
     let logged = false;
-    // name parameters
-    let name;
-    getName();
-    let idOfName;
+    // string title parameters
+    let titleOne;
+    let titleTwo;
+    getTitles();
+    let idOfTitleOne;
+    let idOfTitleTwo;
 
     // get time from DB:
     function getTime(){
@@ -240,7 +244,7 @@
         idOfTime = timer[0]._id;
         let isRunningString = timer[0].isrunning;
         isRunning = JSON.parse(isRunningString);
-        console.log(idOfTime);
+        console.log(time);
         sessionStorage.clear();
         $('#timer').show();
         $('#synchro').hide();
@@ -259,24 +263,24 @@
     }
     //// end of get time from DB section
 
-    ///// get Name from DB section:
-    // get Name from DB:
-    function getName(){
+    ///// get Titles from DB section:
+    // get Titles from DB:
+    function  getTitles(){
         $.ajax({
             method: 'GET',
             url: kinveyBooksUrl,
             headers:  {"Authorization": "Basic cmVhZGVyOnJlYWRlcg=="},
-            success: getNameFromDB
+            success: getTitlesFromDB
         });
     }
 
-    function getNameFromDB(timer){
-        idOfName = timer[1]._id;
-        name =  timer[1].seconds;
-        console.log(name);
-        $('#nameOne').text(name);
-        $('#nameTwo').text(name);
-        $('#nameThree').text(name);
+    function getTitlesFromDB(timer){
+        idOfTitleOne = timer[1]._id;
+        idOfTitleTwo = timer[2]._id;
+        titleOne =  timer[1].seconds;
+        titleTwo =  timer[2].seconds;
+        $('#stringOne').text(titleOne);
+        $('#stringTwo').text(titleTwo);
     }
     //// end of get Name from DB section
 
@@ -386,7 +390,7 @@
                 if(time < 0){
                     $('#clear-timer').click();
                 }
-                console.log(idOfTime);
+                //console.log(idOfTime);
                 let timeString = ""+time;
                 console.log(timeString);
                 let changeTime ={seconds: timeString, isrunning: true};
@@ -466,20 +470,31 @@
                 $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
             });
             // When admin user clicks "Set name" change the name of the user:
-            $('#setName').on('click', function(){
-                name = $('#nameValue').val();
-                let nameString = name;
-                let changeName ={seconds: nameString};
+            $('#setStringOne').on('click', function(){
+                titleOne = $('#stringOneValue').val();
+                let titleString =  titleOne;
+                let changeTitle ={seconds: titleString};
                 $.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfName,
+                    url: kinveyBooksUrl + "/" + idOfTitleOne,
                     headers: loginHeaders,
-                    data: changeName
+                    data: changeTitle
                 });
                 // change the name immediately at your admin timer screen
-                $('#nameOne').text(nameString);
-                $('#nameTwo').text(nameString);
-                $('#nameThree').text(nameString);
+                $('#stringOne').text(titleString);
+            });
+            $('#setStringTwo').on('click', function(){
+                titleTwo = $('#stringTwoValue').val();
+                let titleString = titleTwo;
+                let changeTitle ={seconds: titleString};
+                $.ajax({
+                    method: 'PUT',
+                    url: kinveyBooksUrl + "/" + idOfTitleTwo,
+                    headers: loginHeaders,
+                    data: changeTitle
+                });
+                // change the name immediately at your admin timer screen
+                $('#stringTwo').text(titleString);
             });
 
         } // end of loginSuccess function
