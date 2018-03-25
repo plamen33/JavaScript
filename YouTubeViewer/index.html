@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>YouTubeViewer</title>
+    <link rel ="stylesheet" href ="css/style.css">
+    <link rel ="stylesheet" href ="css/jquery.fancybox.css" media="screen">
+    <!--jquery should be before scriptYTV script-->
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"> </script>&lt;!&ndash;1.11.1/jquery.min.js&ndash;&gt;-->
+    <!--do not work with jQuery version 3-->
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"> </script>  &lt;!&ndash;1.11.1/jquery.min.js&ndash;&gt;-->
+    <script src="js/jquery-2.2.4.min.js"> </script>
+    <script src="js/scriptYTV.js"> </script>
+    <!--fancyBox v2.1.5-->
+    <script src="js/jquery.fancybox.pack.js"> </script>
+
+    <!--we have to call the fancybox plugin:-->
+    <script>
+        $(document).ready(function() {
+            $(".fancybox").fancybox();
+        });
+    </script>
+</head>
+<body>
+     <div id="container">
+         <header>
+             <h1>YouTube search engine <span>Viewer</span></h1>
+             <p>Search for videos in YouTube</p>
+             <p style="color: grey">No annoying advertisements, only videos.</p>
+         </header>
+         <section>
+             <form id ="search-form" name="search-form" onsubmit="return search()">
+                 <div class="fieldcontainer">
+                     <input type="search" id="query" class="search-field" placeholder="Search in YouTube...">
+                     <input type="submit" name="search-button" id="search-button" value="">
+                     <!-- button has no text (value) because it is an images, via CSS -->
+                 </div>
+                 <!-- YouTube search results will be displayed here -->
+                 <ul id="results"></ul>
+
+                 <!-- Prev and Next buttons will be displayed here after a search runs -->
+                 <div id = "buttons"></div>
+             </form>
+         </section>
+         <footer>
+             <p>Software Development Project &copy; 2018, All Rights Reserved</p>
+         </footer>
+     </div>
+</body>
+</html>

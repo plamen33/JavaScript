@@ -5,6 +5,8 @@
 
 [Web Timer](https://plamen33.github.io/JavaScript/WebTimer/WebTimer.html)
 
+[YouTube Viewer](https://plamen33.github.io/JavaScript/YouTubeViewer/index.html)
+
 #### Small projects:
 
 [Weather Application](https://plamen33.github.io/JavaScript/weatherApp.html)
