@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather</title>
+  <style>
+      body {
+          background: url("backgr.jpg") no-repeat center center fixed;
+          background-size: cover;
+      }
+      .display{
+        font-size: 2em;
+        font-family: Florence, cursive;
+        width: 700px;
+      }
+
+      .formContainer{
+        margin: 0 auto;
+        width: 270px;
+      }
+
+      .prompt{
+        font-size: 3em;
+        margin: 0 auto;
+        width: 800px;
+        font-family: Arial, sans-serif;
+      }
+
+      input[type=submit] {
+          width: 100%;
+          background-color: #77DD3C;
+          color: white;
+          padding: 14px 20px;
+          margin: 8px 0;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-family: Arial, sans-serif;
+          font-size: 1em;
+      }
+
+      input[type=submit]:hover {
+          background-color: #49c74d;
+      }
+
+      input[type=submit]:hover {
+          background-color: #49c74d;
+      }
+
+      input[type=submit]:checked {
+          background-color: #4ec74d;
+      }
+
+      input[type=text], select {
+          width: 100%;
+          padding: 12px 20px;
+          margin: 8px 0;
+          display: inline-block;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+          font-family: Arial, sans-serif;
+      }
+      footer{
+        padding:20px;
+        top: 770px;
+  	  left: 430px;
+  	  position:fixed;
+        text-align:center;
+      }
+      /*five day forecast styling:*/
+      .fiveDayContainer{
+          padding:7px;
+          /*border-top:1px solid white;*/
+          width: 100%;
+          position: relative;
+          bottom:10px;
+          display: flex;
+          text-align: center;
+      }
+
+      .containFive{
+          flex:1;
+          font-size: 4vh;
+          border-right: 1px solid greenyellow;
+      }
+      /* end of five day forecast styling*/
+  </style>
+  
+</head>
+<body>
+  <div class = "container">
+    <div class = "prompt">
+      <p> Enter a city name to find its weather:</p>
+    </div>
+    <div class = "formContainer">
+      <form>
+        <br>
+        <input type="text" name="city" required title="Please enter a valid city in the world."  placeholder="Sofia">
+        <input type="submit" value="Enter"  >
+	  </form>
+	    <div class = "display" id = "temperature"></div>
+		<div class = "display" id = "pressure"></div>
+		<img id="weatherIcon" src="">
+		<div class = "display" id = "weather"></div>
+     </div>
+  </div>
+
+  <div style="padding-left:70px; color:blueviolet">
+      <h2 id="forecastTitle"></h2>
+  </div>
+
+  <div class="fiveDayContainer">
+      <div class="containFive">
+          <div id="firstDay"></div>
+          <img id="firstIcon">
+          <div id="firstTemp"></div>
+          <div id="firstDesc"></div>
+      </div>
+      <div class="containFive">
+          <div id="secondDay"></div>
+          <img id="secondIcon">
+          <div id="secondTemp"></div>
+          <div id="secondDesc"></div>
+      </div>
+      <div class="containFive">
+          <div id="thirdDay"></div>
+          <img id="thirdIcon">
+          <div id="thirdTemp"></div>
+          <div id="thirdDesc"></div>
+      </div>
+      <div class="containFive">
+          <div id="fourthDay"></div>
+          <img id="fourthIcon">
+          <div id="fourthTemp"></div>
+          <div id="fourthDesc"></div>
+      </div>
+      <div class="containFive">
+          <div id="fifthDay"></div>
+          <img id="fifthIcon">
+          <div id="fifthTemp"></div>
+          <div id="fifthDesc"></div>
+      </div>
+  </div>
+
+
+  <script>
+     // 5 days forecast parameters;
+     let forecastTitle = document.querySelector("#forecastTitle");
+     let oneIcon = document.querySelector("#firstIcon");
+     let oneTemp = document.querySelector("#firstTemp");
+     let oneDesc = document.querySelector("#firstDesc");
+     let twoIcon = document.querySelector("#secondIcon");
+     let twoTemp = document.querySelector("#secondTemp");
+     let twoDesc = document.querySelector("#secondDesc");
+     let threeIcon = document.querySelector("#thirdIcon");
+     let threeTemp = document.querySelector("#thirdTemp");
+     let threeDesc = document.querySelector("#thirdDesc");
+     let fourIcon = document.querySelector("#fourthIcon");
+     let fourTemp = document.querySelector("#fourthTemp");
+     let fourDesc = document.querySelector("#fourthDesc");
+     let fiveIcon = document.querySelector("#fifthIcon");
+     let fiveTemp = document.querySelector("#fifthTemp");
+     let fiveDesc = document.querySelector("#fifthDesc")
+     const form = document.querySelector("form");
+     let weatherIcon = document.querySelector("#weatherIcon");
+     
+     form.addEventListener("submit", function(event){
+       event.preventDefault();
+       getWeather(form.elements["city"].value);
+     })
+     
+     
+     function getWeather(city){
+       fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}
+         &appid=38c7a3bf4046499d8be4a15128e0d64a`,
+       {mode: 'cors'})
+         .then(function(response) {
+           return response.json()
+         })
+         .then(function(response){
+           console.log (response);
+           weather = response.name;
+           //displayWeather(response.weather[0].description, response.main.temp);
+     	  weatherVisualization(response.weather[0].description, response.main.temp, response.main.pressure, city);
+           let iconOneCode = response.weather[0].icon;
+           let iconOneUrl =
+             "http://openweathermap.org/img/w/" + iconOneCode + ".png";
+           weatherIcon.src = iconOneUrl;	  
+         })
+         .catch(function(error){
+           console.log("Error has happened. Most probebly a wrong city name.");
+           document.getElementById("temperature").textContent = "Wrong city name, please try again."
+         })
+
+         // 5 day forecast
+         fetch( `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&APPID=38c7a3bf4046499d8be4a15128e0d64a`,
+                 { mode: "cors" })
+                 .then(function(response) {
+                     return response.json();
+                 })
+                 .then(function(response) {
+                     console.log("second response:")
+                     console.log(response)
+                     // what we do here is to take appropriate time forecast in the middle of the day at 12:00, so the forecast to look valid
+                     todayDate = Number(response.list[0].dt_txt.split("-")[2].substring(0,2));
+                     let counter = 0;
+                     let lastDay = todayDate;
+                     console.log("todayDate is: "+todayDate);
+
+
+
+                     for(let i=0; i<=39; i++){
+                         let day = Number(response.list[i].dt_txt.split("-")[2].substring(0,2));
+                         if(day != lastDay ){
+                             counter++;
+                             lastDay = day;
+                         }
+                         if(response.list[i]=='undefined'){
+                             break;
+                         }
+                         // make an array of responses not to loose the values
+
+                         if(counter ==1){
+                             let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
+                             if(time == "12:00"){
+                                 // day 1
+                                 document.querySelector("#firstDay").innerHTML = dayAbbrv(1);
+                                 let iconOneCode = response.list[i].weather[0].icon;
+                                 let iconOneUrl =
+                                         "http://openweathermap.org/img/w/" + iconOneCode + ".png";
+                                 oneTemp.innerHTML = response.list[i].main.temp.toFixed(0);
+                                 oneIcon.src = iconOneUrl;
+                                 oneDesc.innerHTML = response.list[i].weather[0].description;
+                             }
+                         }
+                         if(counter ==2){
+                             let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
+                             if(time == "12:00"){
+                                 // day 2
+                                 document.querySelector("#secondDay").innerHTML = dayAbbrv(2);
+                                 let iconTwoCode = response.list[i].weather[0].icon;
+                                 let iconTwoUrl =
+                                         "http://openweathermap.org/img/w/" + iconTwoCode + ".png";
+                                 twoTemp.innerHTML = response.list[i].main.temp.toFixed(0);
+                                 twoIcon.src = iconTwoUrl;
+                                 twoDesc.innerHTML = response.list[i].weather[0].description;
+                             }
+                         }
+                         if(counter ==3){
+                             let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
+                             if(time == "12:00"){
+                                 // day 3
+                                 document.querySelector("#thirdDay").innerHTML = dayAbbrv(3);
+                                 let iconThreeCode = response.list[i].weather[0].icon;
+                                 let iconThreeUrl =
+                                         "http://openweathermap.org/img/w/" + iconThreeCode + ".png";
+                                 threeTemp.innerHTML = response.list[i].main.temp.toFixed(0);
+                                 threeIcon.src = iconThreeUrl;
+                                 threeDesc.innerHTML = response.list[i].weather[0].description;
+                             }
+                         }
+                         if(counter ==4){
+                             let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
+                             if(time == "12:00"){
+                                 // day 4
+                                 document.querySelector("#fourthDay").innerHTML = dayAbbrv(4);
+                                 let iconFourCode = response.list[i].weather[0].icon;
+                                 let iconFourUrl =
+                                         "http://openweathermap.org/img/w/" + iconFourCode + ".png";
+                                 fourTemp.innerHTML = response.list[i].main.temp.toFixed(0);
+                                 fourIcon.src = iconFourUrl;
+                                 fourDesc.innerHTML = response.list[i].weather[0].description;
+                             }
+                         }
+                         if(counter == 5){
+                             let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
+                             if(time == "12:00"){
+                                 // day 5
+                                 document.querySelector("#fifthDay").innerHTML = dayAbbrv(5);
+                                 let iconFiveCode = response.list[i].weather[0].icon;
+                                 let iconFiveUrl =
+                                         "http://openweathermap.org/img/w/" + iconFiveCode + ".png";
+                                 fiveTemp.innerHTML = response.list[i].main.temp.toFixed(0);
+                                 fiveIcon.src = iconFiveUrl;
+                                 fiveDesc.innerHTML = response.list[i].weather[0].description;
+                             }
+                         }
+
+                     }
+
+                 })
+                 .catch(function(err) {
+                     console.log(err);
+                 });
+
+     } // end of getWeather
+     
+     function weatherVisualization (cityWeather, cityTemperature, cityPressure, city){
+     	 document.getElementById("temperature").textContent = `The current temperature in ${city} is ${Math.round(cityTemperature - 273.15)}° C`
+     	 document.getElementById("weather").textContent = `Weather: ${cityWeather}.`
+     	 document.getElementById("pressure").textContent = `The pressure is ${cityPressure} Pa.`
+     }
+     function dayAbbrv(day) {
+         let date = new Date();
+         let n = date.getDay();
+         future = day + n;
+         switch (future) {
+             case 0:
+             case 7:
+                 day = "Sunday";
+                 break;
+             case 1:
+             case 8:
+                 day = "Monday";
+                 break;
+             case 2:
+             case 9:
+                 day = "Tuesday";
+                 break;
+             case 3:
+             case 10:
+                 day = "Wednesday";
+                 break;
+             case 4:
+             case 11:
+                 day = "Thursday";
+                 break;
+             case 5:
+             case 12:
+                 day = "Friday";
+                 break;
+             case 6:
+                 day = "Saturday";
+         }
+         return day;
+     }
+	 
+  </script>
+   <footer>
+             <p>Software Development Project &copy; 2018, All Rights Reserved</p>
+   </footer>
+</body>
+</html>
