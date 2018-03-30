@@ -62,11 +62,11 @@
           font-family: Arial, sans-serif;
       }
       footer{
-        padding:20px;
-        top: 770px;
-  	  left: 430px;
-  	  position:fixed;
-        text-align:center;
+          padding:20px;
+          /*top: 770px;*/
+          /*left: 430px;*/
+          position: relative;
+          text-align:center;
       }
       /*five day forecast styling:*/
       .fiveDayContainer{
@@ -181,9 +181,49 @@
           <canvas id="three-days-chart" width="800" height="350"></canvas>
       </div>
   </div>
-
-
+  <button class="collapsible" id="fiveDayButton" style="background: #bfa34a; :hover {background: #231131}" >5-day detailed forecast</button>
+  <div class="content">
+      <!--five day chart:-->
+      <div style="width: 97%; padding-left: 27px">
+          <!--<p id="five-days-chart">For test</p>-->
+          <canvas id="five-days-chart" width="800" height="350"></canvas>
+      </div>
+  </div>
   <script>
+      // Define a plugin to provide data labels
+      Chart.plugins.register({
+          afterDatasetsDraw: function(chart) {
+              var ctx = chart.ctx;
+
+              chart.data.datasets.forEach(function(dataset, i) {
+                  var meta = chart.getDatasetMeta(i);
+                  if (!meta.hidden) {
+                      meta.data.forEach(function(element, index) {
+                          // Draw the text in black, with the specified font
+                          ctx.fillStyle = 'rgb(0, 0, 0)';
+
+                          var fontSize = 16;
+                          var fontStyle = 'normal';
+                          var fontFamily = 'Helvetica Neue';
+                          ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
+
+                          // Just naively convert to string for now
+                          var dataString = dataset.data[index].toString() + "°C";
+
+                          // Make sure alignment settings are correct
+                          ctx.textAlign = 'center';
+                          ctx.textBaseline = 'middle';
+
+                          var padding = 5;
+                          var position = element.tooltipPosition();
+                          ctx.fillText(dataString, position.x, position.y - (fontSize / 2) - padding);
+                      });
+                  }
+              });
+          }
+      });
+
+
      // 5 days forecast parameters;
      let forecastTitle = document.querySelector("#forecastTitle");
      let oneIcon = document.querySelector("#firstIcon");
@@ -208,6 +248,10 @@
      let threeDayTempArray = [];
      var colorThreeDayArray = [];
 
+      var colorFiveDayArray = [];
+      var dateTimeArrayFive = [];
+      let fiveDayTempArray = [];
+
 
      const form = document.querySelector("form");
      let weatherIcon = document.querySelector("#weatherIcon");
@@ -215,12 +259,11 @@
      form.addEventListener("submit", function(event){
        event.preventDefault();
        getWeather(form.elements["city"].value);
-     })
+     });
      
      
      function getWeather(city){
-       fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}
-         &appid=38c7a3bf4046499d8be4a15128e0d64a`,
+       fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=38c7a3bf4046499d8be4a15128e0d64a`,
        {mode: 'cors'})
          .then(function(response) {
            return response.json()
@@ -231,8 +274,7 @@
            //displayWeather(response.weather[0].description, response.main.temp);
      	  weatherVisualization(response.weather[0].description, response.main.temp, response.main.pressure, city);
            let iconOneCode = response.weather[0].icon;
-           let iconOneUrl =
-             "http://openweathermap.org/img/w/" + iconOneCode + ".png";
+           let iconOneUrl = "http://openweathermap.org/img/w/" + iconOneCode + ".png";
            weatherIcon.src = iconOneUrl;	  
          })
          .catch(function(error){
@@ -333,9 +375,44 @@
                                  fiveDesc.innerHTML = response.list[i].weather[0].description;
                              }
                          }
-
+                         // the Five day Chart:
+                         if(counter == 0){ continue;}
+                         if(counter == 1){ colorFiveDayArray.push("#ffe4c4"); }
+                         if(counter == 2){ colorFiveDayArray.push("#bfffa8"); }
+                         if(counter == 3){ colorFiveDayArray.push("#9bceff"); }
+                         if(counter == 4){ colorFiveDayArray.push("#a8a4ff"); }
+                         if(counter == 5){ colorFiveDayArray.push("#7bffe8"); }
+                         let month = response.list[i].dt_txt.split("-")[1].substring(0,2);
+                         let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
+                         let dateTime = day + "-" + month + " " + time;
+                         console.log(dateTime);
+                         dateTimeArrayFive.push(dateTime);
+                         let temperature = response.list[i].main.temp.toFixed(0);
+                         fiveDayTempArray.push(temperature);
                      }
-
+                     // five day Chart:
+                     new Chart(document.getElementById("five-days-chart"), {
+                         type: 'bar',
+                         data: {
+                             labels: dateTimeArrayFive,
+                             datasets: [
+                                 {
+                                     label: "Temperature ",
+                                     backgroundColor: colorFiveDayArray,
+                                     data:  fiveDayTempArray
+                                 }
+                             ]
+                         },
+                         options: {
+                             legend: { display: false },
+                             title: {
+                                 display: true,
+                                 text: '5-day detailed forecast'
+                             }
+                         }
+                     });
+                     // show the 5 day forecast button:
+                     document.getElementById("fiveDayButton").style.display="inline-block";
                  })
                  .catch(function(err) {
                      console.log(err);
@@ -371,7 +448,6 @@
                          dateTimeArray.push(dateTime);
                          let temperature = response.list[i].main.temp.toFixed(0);
                          threeDayTempArray.push(temperature);
-
                      }
 
                      new Chart(document.getElementById("three-days-chart"), {
