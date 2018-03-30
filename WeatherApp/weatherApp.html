@@ -85,8 +85,39 @@
           border-right: 1px solid greenyellow;
       }
       /* end of five day forecast styling*/
+      /*button to collapse and expand 3 and 5 day forecast*/
+      .collapsible {
+
+          background-color: #7cbd4a;
+          border-radius: 12px;
+          color: navajowhite;
+          cursor: pointer;
+          padding: 18px;
+          width: 21%;
+          border: none;
+          text-align: left;
+          outline: none;
+          font-size: 17px;
+          font-weight: bold;
+          display: none;
+
+      }
+      .active, .collapsible:hover {
+          background-color: #7e933a;
+
+      }
+
+      .content {
+          padding: 0 18px;
+          display: none;
+          overflow: hidden;
+          position: relative;
+          /*background-color: #f1f1f1;*/
+      }
+      /* end of button to collapse and expand 3 and 5 day forecast*/
   </style>
-  
+    <script src="http://www.chartjs.org/dist/2.7.2/Chart.bundle.js"></script>
+
 </head>
 <body>
   <div class = "container">
@@ -142,6 +173,14 @@
           <div id="fifthDesc"></div>
       </div>
   </div>
+  <br>
+  <button class="collapsible" id="threeDayButton">3-day detailed forecast</button>
+  <div class="content">
+      <!--three day chart:-->
+      <div style="width: 97%; padding-left: 27px">
+          <canvas id="three-days-chart" width="800" height="350"></canvas>
+      </div>
+  </div>
 
 
   <script>
@@ -161,7 +200,15 @@
      let fourDesc = document.querySelector("#fourthDesc");
      let fiveIcon = document.querySelector("#fifthIcon");
      let fiveTemp = document.querySelector("#fifthTemp");
-     let fiveDesc = document.querySelector("#fifthDesc")
+     let fiveDesc = document.querySelector("#fifthDesc");
+
+     // 3 day parameters forecast
+     var todayDate = 0;
+     var dateTimeArray = [];
+     let threeDayTempArray = [];
+     var colorThreeDayArray = [];
+
+
      const form = document.querySelector("form");
      let weatherIcon = document.querySelector("#weatherIcon");
      
@@ -225,7 +272,7 @@
                              let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
                              if(time == "12:00"){
                                  // day 1
-                                 document.querySelector("#firstDay").innerHTML = dayAbbrv(1);
+                                 document.querySelector("#firstDay").innerHTML = digitToDay(1);
                                  let iconOneCode = response.list[i].weather[0].icon;
                                  let iconOneUrl =
                                          "http://openweathermap.org/img/w/" + iconOneCode + ".png";
@@ -238,7 +285,7 @@
                              let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
                              if(time == "12:00"){
                                  // day 2
-                                 document.querySelector("#secondDay").innerHTML = dayAbbrv(2);
+                                 document.querySelector("#secondDay").innerHTML = digitToDay(2);
                                  let iconTwoCode = response.list[i].weather[0].icon;
                                  let iconTwoUrl =
                                          "http://openweathermap.org/img/w/" + iconTwoCode + ".png";
@@ -251,7 +298,7 @@
                              let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
                              if(time == "12:00"){
                                  // day 3
-                                 document.querySelector("#thirdDay").innerHTML = dayAbbrv(3);
+                                 document.querySelector("#thirdDay").innerHTML = digitToDay(3);
                                  let iconThreeCode = response.list[i].weather[0].icon;
                                  let iconThreeUrl =
                                          "http://openweathermap.org/img/w/" + iconThreeCode + ".png";
@@ -264,7 +311,7 @@
                              let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
                              if(time == "12:00"){
                                  // day 4
-                                 document.querySelector("#fourthDay").innerHTML = dayAbbrv(4);
+                                 document.querySelector("#fourthDay").innerHTML = digitToDay(4);
                                  let iconFourCode = response.list[i].weather[0].icon;
                                  let iconFourUrl =
                                          "http://openweathermap.org/img/w/" + iconFourCode + ".png";
@@ -277,7 +324,7 @@
                              let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
                              if(time == "12:00"){
                                  // day 5
-                                 document.querySelector("#fifthDay").innerHTML = dayAbbrv(5);
+                                 document.querySelector("#fifthDay").innerHTML = digitToDay(5);
                                  let iconFiveCode = response.list[i].weather[0].icon;
                                  let iconFiveUrl =
                                          "http://openweathermap.org/img/w/" + iconFiveCode + ".png";
@@ -294,18 +341,81 @@
                      console.log(err);
                  });
 
+         // 3-day forecast
+         fetch( `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&APPID=38c7a3bf4046499d8be4a15128e0d64a`,
+                 { mode: "cors" } )
+                 .then(function(response) {
+                     return response.json();
+                 })
+                 .then(function(response) {
+                     // console.log(response);
+                     todayDate = Number(response.list[0].dt_txt.split("-")[2].substring(0,2));
+                     //console.log("todayDate is: "+todayDate);
+                     let counter = 1;
+                     let lastDay = todayDate;
+                     for(let i = 0; i<=23;  i++){
+                         let day = Number(response.list[i].dt_txt.split("-")[2].substring(0,2));
+                         if(day != lastDay ){
+                             counter++;
+                             lastDay = day;
+                         }
+                         if(counter>3){
+                             break;
+                         }
+                         if(counter == 1){ colorThreeDayArray.push("#ffe4c4"); }
+                         if(counter == 2){ colorThreeDayArray.push("#bfffa8"); }
+                         if(counter == 3){ colorThreeDayArray.push("#9bceff"); }
+                         let month = response.list[i].dt_txt.split("-")[1].substring(0,2);
+                         let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
+                         let dateTime = day + "-" + month + " " + time;
+                         dateTimeArray.push(dateTime);
+                         let temperature = response.list[i].main.temp.toFixed(0);
+                         threeDayTempArray.push(temperature);
+
+                     }
+
+                     new Chart(document.getElementById("three-days-chart"), {
+                         type: 'bar',
+                         data: {
+                             labels: dateTimeArray,
+                             datasets: [
+                                 {
+                                     label: "Temperature: ",
+                                     backgroundColor: colorThreeDayArray,
+                                     data: threeDayTempArray
+                                 }
+                             ]
+                         },
+                         options: {
+                             legend: { display: false },
+                             title: {
+                                 display: true,
+                                 text: '3-day detailed forecast'
+                             }
+                         }
+                     });
+                     // show the 3 day forecast button:
+                     document.getElementById("threeDayButton").style.display="inline-block";
+
+                     //console.log(counter);
+                     document.getElementById("forecastTitle").textContent = `Weather forecast: `;
+
+                 })
+                 .catch(function(err) {
+                     console.log(err);
+                 });
      } // end of getWeather
      
      function weatherVisualization (cityWeather, cityTemperature, cityPressure, city){
-     	 document.getElementById("temperature").textContent = `The current temperature in ${city} is ${Math.round(cityTemperature - 273.15)}° C`
-     	 document.getElementById("weather").textContent = `Weather: ${cityWeather}.`
-     	 document.getElementById("pressure").textContent = `The pressure is ${cityPressure} Pa.`
+     	 document.getElementById("temperature").textContent = `The current temperature in ${city} is ${Math.round(cityTemperature - 273.15)}° C`;
+     	 document.getElementById("weather").textContent = `Weather: ${cityWeather}.`;
+     	 document.getElementById("pressure").textContent = `The pressure is ${cityPressure} Pa.`;
      }
-     function dayAbbrv(day) {
+     function digitToDay(day) {
          let date = new Date();
-         let n = date.getDay();
-         future = day + n;
-         switch (future) {
+         let dateDay = date.getDay();
+         let dayNumber = day + dateDay;
+         switch (dayNumber ) {
              case 0:
              case 7:
                  day = "Sunday";
@@ -336,6 +446,21 @@
          return day;
      }
 	 
+  </script>
+  <!--button collapsible-->
+  <script>
+      let coll = document.getElementsByClassName("collapsible");
+      for (let i = 0; i < coll.length; i++) {
+          coll[i].addEventListener("click", function() {
+              this.classList.toggle("active");
+              var content = this.nextElementSibling;
+              if (content.style.display === "block") {
+                  content.style.display = "none";
+              } else {
+                  content.style.display = "block";
+              }
+          });
+      }
   </script>
    <footer>
              <p>Software Development Project &copy; 2018, All Rights Reserved</p>
