@@ -7,9 +7,9 @@
 
 [YouTube Viewer](https://plamen33.github.io/JavaScript/YouTubeViewer/index.html)
 
-#### Small projects:
+[Weather Application](https://plamen33.github.io/JavaScript/WeatherApp/weatherApp.html)
 
-[Weather Application](https://plamen33.github.io/JavaScript/weatherApp.html)
+#### Small projects:
 
 [Multiplication Table](https://plamen33.github.io/JavaScript/MultiplicationTable.html)
 
