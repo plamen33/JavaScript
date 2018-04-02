@@ -251,14 +251,14 @@
      
      form.addEventListener("submit", function(event){
        event.preventDefault();
-         resetCanvas();
+       //  resetCanvas();
        getWeather(form.elements["city"].value);
      });
 
-      function resetCanvas(){
-          document.getElementById("three-days-chart").remove();
-          document.getElementById("three-days-div").append("three-days-chart");
-      }
+    //  function resetCanvas(){
+    //      document.getElementById("three-days-chart").remove();
+    //      document.getElementById("three-days-div").append("three-days-chart");
+    //  }
 
      function getWeather(city){
        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=38c7a3bf4046499d8be4a15128e0d64a`,
@@ -404,7 +404,7 @@
                              legend: { display: false },
                              title: {
                                  display: true,
-                                 text: '5-day detailed forecast'
+                                 text: '4/5-day detailed forecast'
                              }
                          }
                      });
