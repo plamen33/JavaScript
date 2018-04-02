@@ -116,7 +116,8 @@
       }
       /* end of button to collapse and expand 3 and 5 day forecast*/
   </style>
-    <script src="http://www.chartjs.org/dist/2.7.2/Chart.bundle.js"></script>
+    <!--<script src="http://www.chartjs.org/dist/2.7.2/Chart.bundle.js"></script>-->
+    <script src="Chart.js"></script>
 
 </head>
 <body>
@@ -177,7 +178,7 @@
   <button class="collapsible" id="threeDayButton">3-day detailed forecast</button>
   <div class="content">
       <!--three day chart:-->
-      <div style="width: 97%; padding-left: 27px">
+      <div style="width: 97%; padding-left: 27px" id ="three-days-div">
           <canvas id="three-days-chart" width="800" height="350"></canvas>
       </div>
   </div>
@@ -244,24 +245,21 @@
 
      // 3 day parameters forecast
      var todayDate = 0;
-     var dateTimeArray = [];
-     let threeDayTempArray = [];
-     var colorThreeDayArray = [];
-
-      var colorFiveDayArray = [];
-      var dateTimeArrayFive = [];
-      let fiveDayTempArray = [];
-
 
      const form = document.querySelector("form");
      let weatherIcon = document.querySelector("#weatherIcon");
      
      form.addEventListener("submit", function(event){
        event.preventDefault();
+         resetCanvas();
        getWeather(form.elements["city"].value);
      });
-     
-     
+
+      function resetCanvas(){
+          document.getElementById("three-days-chart").remove();
+          document.getElementById("three-days-div").append("three-days-chart");
+      }
+
      function getWeather(city){
        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=38c7a3bf4046499d8be4a15128e0d64a`,
        {mode: 'cors'})
@@ -280,7 +278,7 @@
          .catch(function(error){
            console.log("Error has happened. Most probebly a wrong city name.");
            document.getElementById("temperature").textContent = "Wrong city name, please try again."
-         })
+         });
 
          // 5 day forecast
          fetch( `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&APPID=38c7a3bf4046499d8be4a15128e0d64a`,
@@ -289,7 +287,10 @@
                      return response.json();
                  })
                  .then(function(response) {
-                     console.log("second response:")
+                     let colorFiveDayArray = [];
+                     let dateTimeArrayFive = [];
+                     let fiveDayTempArray = [];
+
                      console.log(response)
                      // what we do here is to take appropriate time forecast in the middle of the day at 12:00, so the forecast to look valid
                      todayDate = Number(response.list[0].dt_txt.split("-")[2].substring(0,2));
@@ -297,19 +298,15 @@
                      let lastDay = todayDate;
                      console.log("todayDate is: "+todayDate);
 
-
-
-                     for(let i=0; i<=39; i++){
+                     for(let i=0; i<=37; i++){
+                         if(response.list[i]=='undefined'){
+                             break;
+                         }
                          let day = Number(response.list[i].dt_txt.split("-")[2].substring(0,2));
                          if(day != lastDay ){
                              counter++;
                              lastDay = day;
                          }
-                         if(response.list[i]=='undefined'){
-                             break;
-                         }
-                         // make an array of responses not to loose the values
-
                          if(counter ==1){
                              let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
                              if(time == "12:00"){
@@ -425,6 +422,9 @@
                      return response.json();
                  })
                  .then(function(response) {
+                     let dateTimeArray =[];
+                     let colorThreeDayArray = [];
+                     let threeDayTempArray = [];
                      // console.log(response);
                      todayDate = Number(response.list[0].dt_txt.split("-")[2].substring(0,2));
                      //console.log("todayDate is: "+todayDate);
@@ -470,11 +470,12 @@
                              }
                          }
                      });
+
                      // show the 3 day forecast button:
                      document.getElementById("threeDayButton").style.display="inline-block";
 
                      //console.log(counter);
-                     document.getElementById("forecastTitle").textContent = `Weather forecast: `;
+                     document.getElementById("forecastTitle").textContent = "Weather forecast: ";
 
                  })
                  .catch(function(err) {
@@ -521,7 +522,6 @@
          }
          return day;
      }
-	 
   </script>
   <!--button collapsible-->
   <script>
