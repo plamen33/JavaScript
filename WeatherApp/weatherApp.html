@@ -129,12 +129,12 @@
       <form>
         <br>
         <input type="text" name="city" required title="Please enter a valid city in the world."  placeholder="Sofia">
-        <input type="submit" value="Enter"  >
-	  </form>
-	    <div class = "display" id = "temperature"></div>
-		<div class = "display" id = "pressure"></div>
-		<img id="weatherIcon" src="">
-		<div class = "display" id = "weather"></div>
+        <input type="submit" value="Enter" id ="submitbtn" >
+     </form>
+       <div class = "display" id = "temperature"></div>
+      <div class = "display" id = "pressure"></div>
+      <img id="weatherIcon" src="">
+      <div class = "display" id = "weather"></div>
      </div>
   </div>
 
@@ -185,12 +185,13 @@
   <button class="collapsible" id="fiveDayButton" style="background: #bfa34a; :hover {background: #231131}" >5-day detailed forecast</button>
   <div class="content">
       <!--five day chart:-->
-      <div style="width: 97%; padding-left: 27px">
+      <div style="width: 97%; padding-left: 27px" id ="five-days-div">
           <!--<p id="five-days-chart">For test</p>-->
           <canvas id="five-days-chart" width="800" height="350"></canvas>
       </div>
   </div>
   <script>
+      var firstTimeLogin = 0;
       // Define a plugin to provide data labels
       Chart.plugins.register({
           afterDatasetsDraw: function(chart) {
@@ -250,15 +251,25 @@
      let weatherIcon = document.querySelector("#weatherIcon");
      
      form.addEventListener("submit", function(event){
-       event.preventDefault();
-       //  resetCanvas();
-       getWeather(form.elements["city"].value);
+      if(firstTimeLogin == 0){
+        event.preventDefault();
+         getWeather(form.elements["city"].value);
+       firstTimeLogin ++;
+      } else{
+          let city = form.elements["city"].value;
+         console.log("city is : " + city);
+          window.location.reload();
+         console.log("city is : " + city);
+          event.preventDefault();
+           getWeather(city);
+         console.log("city is : " + city);
+         document.getElementById('submitbtn').click();
+         
+      } 
      });
 
-    //  function resetCanvas(){
-    //      document.getElementById("three-days-chart").remove();
-    //      document.getElementById("three-days-div").append("three-days-chart");
-    //  }
+      function resetCanvas(){
+      }
 
      function getWeather(city){
        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=38c7a3bf4046499d8be4a15128e0d64a`,
@@ -270,10 +281,10 @@
            console.log (response);
            weather = response.name;
            //displayWeather(response.weather[0].description, response.main.temp);
-     	  weatherVisualization(response.weather[0].description, response.main.temp, response.main.pressure, city);
+         weatherVisualization(response.weather[0].description, response.main.temp, response.main.pressure, city);
            let iconOneCode = response.weather[0].icon;
            let iconOneUrl = "http://openweathermap.org/img/w/" + iconOneCode + ".png";
-           weatherIcon.src = iconOneUrl;	  
+           weatherIcon.src = iconOneUrl;     
          })
          .catch(function(error){
            console.log("Error has happened. Most probebly a wrong city name.");
@@ -296,9 +307,12 @@
                      todayDate = Number(response.list[0].dt_txt.split("-")[2].substring(0,2));
                      let counter = 0;
                      let lastDay = todayDate;
-                     console.log("todayDate is: "+todayDate);
+                     //console.log("todayDate is: "+todayDate);
+                console.log("response: " + response.list.length);
+                let listLength = Number(response.list.length);
 
-                     for(let i=0; i<=37; i++){
+
+                     for(let i=0; i < listLength; i++){
                          if(response.list[i]=='undefined'){
                              break;
                          }
@@ -373,12 +387,12 @@
                              }
                          }
                          // the Five day Chart:
-                         if(counter == 0){ continue;}
-                         if(counter == 1){ colorFiveDayArray.push("#ffe4c4"); }
-                         if(counter == 2){ colorFiveDayArray.push("#bfffa8"); }
-                         if(counter == 3){ colorFiveDayArray.push("#9bceff"); }
-                         if(counter == 4){ colorFiveDayArray.push("#a8a4ff"); }
-                         if(counter == 5){ colorFiveDayArray.push("#7bffe8"); }
+                         if(counter == 0){ colorFiveDayArray.push("#ffe4c4"); }
+                         if(counter == 1){ colorFiveDayArray.push("#bfffa8"); }
+                         if(counter == 2){ colorFiveDayArray.push("#9bceff"); }
+                         if(counter == 3){ colorFiveDayArray.push("#a8a4ff"); }
+                         if(counter == 4){ colorFiveDayArray.push("#7bffe8"); }
+                   if(counter == 5){ colorFiveDayArray.push("#7bffe8"); }
                          let month = response.list[i].dt_txt.split("-")[1].substring(0,2);
                          let time = response.list[i].dt_txt.split("-")[2].substring(3,8);
                          let dateTime = day + "-" + month + " " + time;
@@ -404,7 +418,7 @@
                              legend: { display: false },
                              title: {
                                  display: true,
-                                 text: '4/5-day detailed forecast'
+                                 text: '5-day detailed forecast'
                              }
                          }
                      });
@@ -484,9 +498,9 @@
      } // end of getWeather
      
      function weatherVisualization (cityWeather, cityTemperature, cityPressure, city){
-     	 document.getElementById("temperature").textContent = `The current temperature in ${city} is ${Math.round(cityTemperature - 273.15)}° C`;
-     	 document.getElementById("weather").textContent = `Weather: ${cityWeather}.`;
-     	 document.getElementById("pressure").textContent = `The pressure is ${cityPressure} Pa.`;
+        document.getElementById("temperature").textContent = `The current temperature in ${city} is ${Math.round(cityTemperature - 273.15)}° C`;
+        document.getElementById("weather").textContent = `Weather: ${cityWeather}.`;
+        document.getElementById("pressure").textContent = `The pressure is ${cityPressure} Pa.`;
      }
      function digitToDay(day) {
          let date = new Date();
