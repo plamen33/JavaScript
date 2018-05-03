@@ -1,4 +1,7 @@
 ### Projects can be tested live from the links below:
+
+[Marketplace Project](https://plamen33.github.io/Marketplace-JS/#/)
+
 [Book Library Project](https://plamen33.github.io/JavaScript/BookLibrary/books.html)
 
 [JavaScript webpainter](https://plamen33.github.io/JavaScript/webpainter.html)
@@ -14,3 +17,5 @@
 [Multiplication Table](https://plamen33.github.io/JavaScript/MultiplicationTable.html)
 
 [Monthly calendar](https://plamen33.github.io/JavaScript/Monthly%20Calendar%20with%20Javascript.html)
+
+[To-Do List](https://plamen33.github.io/JavaScript/TodoList.html)

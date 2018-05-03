@@ -129,7 +129,7 @@
       <form>
         <br>
         <input type="text" name="city" required title="Please enter a valid city in the world."  placeholder="Sofia">
-        <input type="submit" value="Enter" id ="submitbtn" >
+        <input type="submit" value="Enter" id ="submitbtn" title="On first click weather data is displayed. On second click data is cleared, but input text remains in the input field. On third click weather data is displayed again, according with the input." >
      </form>
        <div class = "display" id = "temperature"></div>
       <div class = "display" id = "pressure"></div>
@@ -268,8 +268,6 @@
       } 
      });
 
-      function resetCanvas(){
-      }
 
      function getWeather(city){
        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=38c7a3bf4046499d8be4a15128e0d64a`,
