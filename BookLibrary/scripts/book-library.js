@@ -109,6 +109,9 @@ function login() {
     function loginSuccess(response) {
         let userAuth = response._kmd.authtoken;
         sessionStorage.setItem('authToken', userAuth);
+		 // save the user in sessionStorage:
+        let userId = response._id; // get the user id
+        sessionStorage.setItem('userId', userId);
         showHideMenuLinks();
         listBooks();
         showInfo('Login successful.');
@@ -149,6 +152,10 @@ function register(){
     function registerSuccess(response){
         let userAuth = response._kmd.authtoken;
         sessionStorage.setItem('authToken', userAuth);
+		 // save the user in sessionStorage:
+        let userId = response._id; // get the user id
+        sessionStorage.setItem('userId', userId);
+		
         showHideMenuLinks();
         listBooks();
         showInfo('User registration successful.');
@@ -180,17 +187,60 @@ function listBooks() {
                 .append($('<tr>').append(
                     '<th>Title</th>',
                     '<th>Author</th>',
-                    '<th>Description</th>')
+                    '<th>Description</th>',
+                    '<th>Actions</th>'
+                  )
                 );
             for (let book of books) {
+				
+				// functionality for edit and delete a book:
+                let links = [];
+                // show edit and delete buttons for author of the book:
+                if(book._acl.creator == sessionStorage['userId']) {
+                    let editLink = $('<a href=\"#\" class=\"editButton\">Edit</a>').click(function () {
+
+                    });
+                    let deleteLink = $('<a href=\"#\" class=\"deleteButton\">Delete</a>').click(function () {
+                        deleteBook(book);
+                    });
+                    links = [editLink,' ', deleteLink];
+                }
+				
                 booksTable.append($('<tr>').append(
                     $('<td>').text(book.title),
                     $('<td>').text(book.author),
-                    $('<td>').text(book.description))
+                     $('<td>').text(book.description),
+                    // display the edit and delete buttons:
+                    $('<td>').append(links)
+                    )
+                    // if we add it here it will be shown for each of the users
+                    //.append("<a href=\"#\" class=\"editButton\">Edit</a>")
+                    //.append("<a href=\"#\" class=\"deleteButton\">Delete</a>")
                 );
             }
             $('#books').append(booksTable);
         }
+    }// end of loadBooksSuccess
+}
+
+function getKinveyUserAuthHeaders() {
+    return {
+        "Authorization": "Kinvey " + sessionStorage.getItem('authToken')
+    };
+}
+
+function deleteBook(book){
+    const kinveyDeleteUrl = kinveyBaseUrl + 'appdata/' + kinveyAppKey + '/books/' + book._id;
+    $.ajax({
+        method: "DELETE",
+        url: kinveyDeleteUrl,
+        headers: getKinveyUserAuthHeaders(),
+        success: deleteBookSuccess,
+        error: handleAjaxError
+    });
+    function deleteBookSuccess(response){
+        listBooks();
+        showInfo("Book was successfully deleted !");
     }
 }
 
