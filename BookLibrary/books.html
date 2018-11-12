@@ -7,7 +7,7 @@
     <script src="scripts/jquery-3.0.0.min.js"></script>
     <script src="scripts/book-library.js"></script>
 </head>
-<body>
+<body onload="startApplication()">
 <header id="menu">
     <a href="#" id="linkHome">Home</a>
     <a href="#" id="linkLogin">Login</a>
@@ -65,6 +65,21 @@
             <div><input type="submit" value="Create"/></div>
         </form>
     </section>
+	
+	<section id="viewEditBook">
+        <h1>Edit existing book:</h1>
+        <form id="formEditBook">
+            <div><input type="hidden" name="id" required /></div>
+            <div>Title:</div>
+            <div><input type="text" name="title" required /></div>
+            <div>Author:</div>
+            <div><input type="text" name="author" required /></div>
+            <div>Description:</div>
+            <div><textarea name="description" rows="10" required></textarea></div>
+            <div><input type="button" id="buttonEditBook" value="Edit" /></div>
+        </form>
+    </section>
+	
 </main>
 <img src="images/book.jpg" alt="a book" width="377" height="111">
 <footer>Books Library JS Project &#8482;</footer>
