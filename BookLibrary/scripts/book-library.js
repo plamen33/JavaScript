@@ -25,6 +25,11 @@ function startApplication(){
     $('#linkCreateBooks').click(showCreateBookView);
     $('#linkLogout').click(logout);  /// when we click on the Logout link activate the logout function and do the logout itself
     
+	// Bind the info / error boxes
+    $("#infoBox, #errorBox").on('click', function() {
+        $(this).fadeOut()
+    })
+	
     $('#formLogin').submit(function (e) {
         e.preventDefault();
         login();
@@ -40,12 +45,17 @@ function startApplication(){
     // when Edit button is clicked on Edit form:
     $('#buttonEditBook').click(editBook);
     
+	// AJAX "loading" event listener
     $(document).on({
         ajaxStart: function () {
-            $('#loadingBox').show()
+            $('main').hide();
+            $('#loader').show();
+			// $('#loadingBox').show();
         },
         ajaxStop: function () {
-            $('#loadingBox').hide()
+            $('#loader').hide();
+            $('main').fadeIn(500);
+			// $('#loadingBox').hide();
         }
     });
     // }) // end of IIFE
@@ -84,6 +94,9 @@ function startApplication(){
     function showError(errorMsg) {
         $('#errorBox').text("Error: " + errorMsg);
         $('#errorBox').show();
+		setTimeout(function () {
+            $('#errorBox').fadeOut()
+        }, 5000);
     }
 
     function showHomeView(){
@@ -117,18 +130,21 @@ function startApplication(){
             // save the user in sessionStorage:
             let userId = response._id; // get the user id
             sessionStorage.setItem('userId', userId);
+			$('#loggedInUser').text(`Welcome, ${response.username}!`);
             showHideMenuLinks();
             listBooks();
             showInfo('Login successful.');
         }
     }
 
-    function handleAjaxError(response) {
-        let errorMsg = JSON.stringify((response));
-        if (response.readyState === 0)
-            errorMsg = "Cannot connect due to network error."
-        if (response.responseJSON && response.repsonseJSON.description)
+     function handleAjaxError (response) {
+        let errorMsg = JSON.stringify(response);
+        if (response.readyState === 0) {
+            errorMsg = 'Cannot connect due to network error.';
+        }
+        if (response.responseJSON && response.responseJSON.description) {
             errorMsg = response.responseJSON.description;
+        }
         showError(errorMsg);
     }
 
@@ -159,7 +175,7 @@ function startApplication(){
              // save the user in sessionStorage:
              let userId = response._id; // get the user id
              sessionStorage.setItem('userId', userId);
-
+             $('#loggedInUser').text(`Welcome, ${response.username}!`);
              showHideMenuLinks();
              listBooks();
              showInfo('User registration successful.');
@@ -182,7 +198,7 @@ function startApplication(){
         });
 
         function loadBooksSuccess(books){
-            showInfo('Books loaded.');
+            // showInfo('Books loaded.');
             if (books.length == 0){
                 $('#books').text('No books in the library.');
             }else {
@@ -316,9 +332,28 @@ function startApplication(){
 
     function logout(){
         sessionStorage.clear();
+		 $('#loggedInUser').text("");
         showHideMenuLinks();
         showView('viewHome');
     }
 
 }
 
+// attach loader to the body
+$(document).ready( function () {
+    var id = 'loader', fill = '#FFC477',
+        size = 30, radius = 3, duration = 1000,
+        maxOpacity = 1, minOpacity = 0.15;
+    $('<svg id="'+id+'" width="'+(size*3.5)+'" height="'+size+'">' +
+        '<rect width="'+size+'" height="'+size+'" x="0" y="0" rx="'+radius+'" ry="'+radius+'" fill="'+fill+'" fill-opacity="'+maxOpacity+'">' +
+        '<animate attributeName="opacity" values="1;'+minOpacity+';1" dur="'+duration+'ms" repeatCount="indefinite"/>' +
+        '</rect>' +
+        '<rect width="'+size+'" height="'+size+'" x="'+(size*1.25)+'" y="0" rx="'+radius+'" ry="'+radius+'" fill="'+fill+'" fill-opacity="'+maxOpacity+'">' +
+        '<animate attributeName="opacity" values="1;'+minOpacity+';1" dur="'+duration+'ms" begin="'+(duration/4)+'ms" repeatCount="indefinite"/>' +
+        '</rect>' +
+        '<rect width="'+size+'" height="'+size+'" x="'+(size*2.5)+'" y="0" rx="'+radius+'" ry="'+radius+'" fill="'+fill+'" fill-opacity="'+maxOpacity+'">' +
+        '<animate attributeName="opacity" values="1;'+minOpacity+';1" dur="'+duration+'ms" begin="'+(duration/2)+'ms" repeatCount="indefinite"/>' +
+        '</rect>' +
+        '</svg>').appendTo('body');
+    $('#loader').hide();
+});

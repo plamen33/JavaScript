@@ -7,6 +7,11 @@
     font-size: 1.2em;
 }
 
+#menu>#loggedInUser {
+    float: right;
+    margin-right: 10px;
+}
+
 #menu a {
     display: none;
     text-decoration: none;
@@ -38,7 +43,14 @@ table td {
 }
 
 #infoBox, #errorBox, #loadingBox {
-    width: 80%;
+    position: absolute;
+    float: right;
+    right: 50px;
+    left: 50px;
+    top: 42px;
+    padding:  0.5em 2em 0.5em 2em;
+    margin: 1em;
+    width: 40%;
     margin: 10px auto;
     color: white;
     text-align: center;
@@ -46,9 +58,9 @@ table td {
     border-radius: 3px;
 }
 
-#loadingBox {
-    background: #7CB3E9;
-}
+/*#loadingBox {*/
+    /*background: #7CB3E9;*/
+/*}*/
 #infoBox {
     background: #393;
 }
@@ -62,9 +74,17 @@ input[type=submit] {
 
 footer {
     background: #ffdc7b;
-    padding: 5px 10px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 33px;
+    width: 100%;
+    #padding: 5px 10px;
     font-size: 1.0em; /* this means 80% from the original*/
     text-align: center;
+    align-self: center;
+    vertical-align: center;
+    align-items: center;
     border-radius: 3px;
 }
 
@@ -150,4 +170,11 @@ footer {
 .deleteButton:active {
     position:relative;
     top:1px;
+}
+
+/* STYLE OF LOADER */
+#loader {
+    position: fixed;
+    top: 21%; left: 50%;
+    transform: translate(-50%, -50%);
 }

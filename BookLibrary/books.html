@@ -15,11 +15,12 @@
     <a href="#" id="linkListBooks">List Books</a>
     <a href="#" id="linkCreateBooks">Create Book</a>
     <a href="#" id="linkLogout">Logout</a>
+	<span id="loggedInUser"></span>
 </header>
 
 <main>
     <!--main> section holds the views (sub-pages) of the application:-->
-    <section id="loadingBox">Loading...</section>
+    <!--<section id="loadingBox">Loading...</section>-->
     <section id="infoBox" onclick="$(this).fadeOut()">Info</section>
     <section id="errorBox" onclick="$(this).fadeOut()">Error</section>
     <section id="viewHome">
@@ -81,7 +82,7 @@
     </section>
 	
 </main>
-<img src="images/book.jpg" alt="a book" width="377" height="111">
+<img src="images/book.jpg" alt="a book"  width="377" height="111" style="vertical-align:bottom; margin-bottom: 3%; bottom:0px; position: absolute">
 <footer>Books Library JS Project &#8482;</footer>
 </body>
 </html>
