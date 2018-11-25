@@ -24,7 +24,6 @@
 <main>
     <!--main> section holds the views (sub-pages) of the application:-->
     <!--<section id="loadingBox">Loading...</section>-->
-    <section id="infoBox" onclick="$(this).fadeOut()">Info</section>
     <section id="errorBox" onclick="$(this).fadeOut()">Error</section>
     <section id="viewHome">
         <h1>Welcome</h1>
@@ -53,6 +52,7 @@
     </section>
 
     <section id="viewBooks">
+	    <section id="infoBox" onclick="$(this).fadeOut()">Info</section>
         <h1>Books</h1>
         <div class="content">
             <div id="books">

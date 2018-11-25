@@ -130,8 +130,8 @@ function startApplication(){
             sessionStorage.setItem('userId', userId);
 			$('#loggedInUser').text(`Welcome, ${response.username}!`);
             showHideMenuLinks();
-            listBooks();
             showInfo('Login successful.');
+			listBooks();
         }
     }
 
