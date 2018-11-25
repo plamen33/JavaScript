@@ -5,6 +5,9 @@
     <title>Book Library</title>
     <link rel="stylesheet" type="text/css" href="styles/site.css"/>
     <script src="scripts/jquery-3.0.0.min.js"></script>
+	<script src="scripts/jquery.twbsPagination.js"></script>
+    <!--web address:-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/twbs-pagination/1.4.1/jquery.twbsPagination.js"></script>-->
     <script src="scripts/book-library.js"></script>
 </head>
 <body onload="startApplication()">
@@ -51,7 +54,41 @@
 
     <section id="viewBooks">
         <h1>Books</h1>
-        <div id="books"/>
+        <div class="content">
+            <div id="books">
+                <table>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                    <tr>
+                        <td>Book title</td>
+                        <td>Book author</td>
+                        <td>Book description</td>
+                        <td>
+                            <a href="#">[Delete]</a>
+                            <a href="#">[Edit]</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Book title</td>
+                        <td>Book author</td>
+                        <td>Book description</td>
+                        <td>
+                            <a href="#">[Delete]</a>
+                            <a href="#">[Edit]</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="col-sm-12">
+                <ul id="pagination-of-books" class="pagination"></ul>
+            </div>
+        </div>
     </section>
 
     <section id="viewCreateBook">
@@ -62,7 +99,7 @@
             <div>Author</div>
             <div><input type="text" id="bookAuthor" required/></div>
             <div>Description:</div>
-            <div><textarea id="bookDescription" rows="10" required></textarea></div>
+            <div><textarea id="bookDescription" rows="10" title="Maximum 100 characters." required></textarea></div>
             <div><input type="submit" value="Create"/></div>
         </form>
     </section>
@@ -76,7 +113,7 @@
             <div>Author:</div>
             <div><input type="text" name="author" required /></div>
             <div>Description:</div>
-            <div><textarea name="description" rows="10" required></textarea></div>
+            <div><textarea name="description" rows="10" title="Maximum 100 characters." required></textarea></div>
             <div><input type="button" id="buttonEditBook" value="Edit" /></div>
         </form>
     </section>

@@ -1,14 +1,12 @@
 function startApplication(){
 
    'use strict';
-   // working data of some guy
-   // const kinveyBaseUrl = "https://baas.kinvey.com/";
-   // const kinveyAppKey = "kid_HJFh6nWL";
-   // const kinveyAppSecret = "299c85c5a1af47e7978c40ba2dff565d";
 
    const kinveyBaseUrl = "https://baas.kinvey.com/";
    const kinveyAppKey = "kid_BysPrvXlz";
    const kinveyAppSecret = "b741d837b8034ce5bd42b02c510013b5";
+   
+   const BOOKS_PER_PAGE = 10;
 
    function showView(viewId) {     // function which by name of section hides and showes the others
        $('main > section').hide(); // hide all the views
@@ -184,7 +182,7 @@ function startApplication(){
 
     function listBooks() {
 
-        $('#books').empty();
+        //$('#books').empty();
         showView('viewBooks');
 
         const kinveyBooksUrl = kinveyBaseUrl + "appdata/" + kinveyAppKey + "/books";
@@ -193,55 +191,9 @@ function startApplication(){
             method: 'GET',
             url: kinveyBooksUrl,
             headers: getKinveyUserAuthHeaders(),
-            success: loadBooksSuccess,
+            success: displayPaginationAndBooks,
             error: handleAjaxError
         });
-
-        function loadBooksSuccess(books){
-            // showInfo('Books loaded.');
-            if (books.length == 0){
-                $('#books').text('No books in the library.');
-            }else {
-                let booksTable = $('<table>')
-                    .append($('<tr>').append(
-                        '<th>Title</th>',
-                        '<th>Author</th>',
-                        '<th>Description</th>',
-                        '<th>Actions</th>'
-                      )
-                    );
-
-                for (let book of books) {
-
-                    // functionality for edit and delete a book:
-                    let links = [];
-                    // show edit and delete buttons for author of the book:
-                    if(book._acl.creator == sessionStorage['userId']) {
-                        let editLink = $('<a href=\"#\" class=\"editButton\">Edit</a>').click(function () {
-                            loadBookForEdit(book);
-                        });
-                        let deleteLink = $('<a href=\"#\" class=\"deleteButton\">Delete</a>').click(function () {
-                            deleteBook(book);
-                        });
-                        links = [editLink,' ', deleteLink];
-                    }
-
-
-                    booksTable.append($('<tr>').append(
-                        $('<td>').text(book.title),
-                        $('<td>').text(book.author),
-                        $('<td>').text(book.description),
-                        // display the edit and delete buttons:
-                        $('<td>').append(links)
-                        )
-                        // if we add it here it will be shown for each of the users
-                        //.append("<a href=\"#\" class=\"editButton\">Edit</a>")
-                        //.append("<a href=\"#\" class=\"deleteButton\">Delete</a>")
-                    );
-                }
-                $('#books').append(booksTable);
-            }
-        } // end of loadBooksSuccess
     }
 
     function loadBookForEdit(book) {
@@ -294,7 +246,7 @@ function startApplication(){
         let bookData = {
             title: $('#bookTitle').val(),
             author: $('#bookAuthor').val(),
-            description: $('#bookDescription').val()
+            description: $('#bookDescription').val().substr(0,100)
         };
         $.ajax({
             method: 'POST',
@@ -314,7 +266,7 @@ function startApplication(){
         let bookData = {
             title: $('#formEditBook input[name=title]').val(),
             author: $('#formEditBook input[name=author]').val(),
-            description: $('#formEditBook textarea[name=description]').val()
+            description: $('#formEditBook textarea[name=description]').val().substr(0,100)
         };
         $.ajax({
             method: "PUT",
@@ -337,7 +289,66 @@ function startApplication(){
         showView('viewHome');
     }
 
-}
+    function displayPaginationAndBooks(books) {
+        // display the list of books in descending order by creation
+        let booksReversed = books.reverse();
+        showView('viewBooks');
+        let pagination = $('#pagination-of-books');
+        if(pagination.data("twbs-pagination")){
+            pagination.twbsPagination('destroy')
+        }
+        pagination.twbsPagination({
+            // how much pages we will have:
+            totalPages: Math.ceil(booksReversed.length / BOOKS_PER_PAGE),
+            // how much pages will be visible in the menu:
+            visiblePages: 5,
+            // paging buttons
+            next: 'Next',
+            prev: 'Prev',
+            // when you click on the page do these actions:
+            onPageClick: function (event, page) {
+                //define our table:
+                let table = $('#books > table');
+                // remove the old pages:
+                table.find('tr').each((index, el) => {
+                    if(index > 0) {
+                        $(el).remove()
+                    }
+                });
+                // page is the current page
+                // first book on the page:
+                let startBook = (page - 1) * BOOKS_PER_PAGE;
+                // the last book on the page
+                let endBook = Math.min(startBook + BOOKS_PER_PAGE, booksReversed.length);
+                $(`a:contains(${page})`).addClass('active');
+                for (let i = startBook; i < endBook; i++) {
+                    let tr = $(`<tr>`);
+                    table.append(
+                        $(tr).append($(`<td>${booksReversed[i].title}</td>`))
+                             .append($(`<td>${booksReversed[i].author}</td>`))
+                             .append($(`<td>${booksReversed[i].description}</td>`))
+                    );
+                    if(booksReversed[i]._acl.creator === sessionStorage.getItem('userId')) {
+                        $(tr).append(
+                            $(`<td>`).append(
+                                $('<a href=\"#\" class=\"editButton\">Edit</a>').on('click', function () {
+                                    loadBookForEdit(booksReversed[i])
+                                })
+                            ).append(
+                                $('<a href=\"#\" class=\"deleteButton\">Delete</a>').on('click', function () {
+                                    deleteBook(booksReversed[i])
+                                })
+                            )
+                        );
+                        // end of if
+                    } else{
+                        $(tr).append($('<td>'));
+                    }
+                } // end of for cycle
+            }// end of onPageClick
+        });// end of displayPaginationAndBooks
+    } // end of displayPaginationAndBooks
+} // end of startApplication
 
 // attach loader to the body
 $(document).ready( function () {
