@@ -1,6 +1,6 @@
 ### Projects can be tested live from the links below:
 
-[ToDoList Angular Project]https://plamen33.github.io/ToDoList-Angular Angular project
+[ToDoList Angular Project](https://plamen33.github.io/ToDoList-Angular) Angular project
 
 [Marketplace Project](https://plamen33.github.io/Marketplace-JS/#/)
 
