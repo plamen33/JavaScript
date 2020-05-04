@@ -9,6 +9,24 @@
     <!--snow effect-->
     <script src="scripts/jquery.snow.js"></script>
     <!--snow effect-->
+	<!--firebase initialization-->
+	<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-auth.js"></script>
+	<script>
+     // Your web app's Firebase configuration
+       var firebaseConfig = {
+           apiKey: "AIzaSyCbm5uqO2BqxG_opvl-4Jk7Fjeb-W0lQuU",
+           authDomain: "webtimer-383fc.firebaseapp.com",
+           databaseURL: "https://webtimer-383fc.firebaseio.com",
+           projectId: "webtimer-383fc",
+           storageBucket: "webtimer-383fc.appspot.com",
+           messagingSenderId: "323483648870",
+           appId: "1:323483648870:web:c6b577df173f4d44377ea7",
+           measurementId: "G-EPRVHDXCGQ"
+          };
+             // Initialize Firebase
+          firebase.initializeApp(firebaseConfig);
+    </script>
     <style>
         #timer {
             font-size: 5em;
@@ -98,6 +116,62 @@
         @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
         @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
         /*snow effect:*/
+		
+         /*rain effect:*/
+		 body {
+             margin:0;
+             padding:0;
+            /* background:url(images/grass.jpg );*/
+             background-size:1500px 870px;
+             background-repeat:no-repeat ;
+        }
+        .rain{
+            height:100vh;
+            background:url(images/rain_PNG13470.png);
+            animation:rain .7s linear infinite ;
+        }
+        .rain:before{
+            content:' ';
+            position:absolute ;
+            width:70%;
+            height:10%;
+            background:#fff;
+            animation:lightning 1s linear infinite;
+            opacity:0;
+        }
+        @keyframes rain{
+            0%{
+                background-position:0% 0%;
+            }
+            100%{
+                background-position:0% 100%;
+            }
+        }
+        @keyframes lightning{
+            0%{
+                opacity:0;
+            }
+            10%{
+                opacity:1;
+            }
+            19%{
+                opacity:0;
+            }
+            20%{
+                opacity:1;
+            }
+            
+            24%{
+                opacity:1;
+            }
+            30%{
+                opacity:0;
+            }
+            87%{
+                opacity:0;
+            }
+        }
+		/*rain effect:*/
     </style>
 </head>
 <body>
@@ -118,7 +192,7 @@
 ">
     <span id="stringTwo" class="timer">Please wait...</span>
 </div >
-<img src="images/image3.jpg" align="right" alt="image" width="333" height="209">
+
 <div id="timer">
     <span id="hours" class="timer">00</span>:
     <span id="minutes" class="timer">00</span>:
@@ -129,6 +203,14 @@
 </div>
 <button class="button button2" href="#" id="linkLogin"> Login </button>
 <button class="button button2" href="#" id="linkLogout"> Logout </button>
+<p> </p>
+<div>
+  <button class="button button2" id="start-snow">Start snow</button>
+  <button class="button button2" id="add-snowimg">Add snow image</button>
+  <button class="button button2" id="remove-snowimg">Remove snow image</button>
+  <button class="button button2" id="start-rain">Start rain</button>
+  <button class="button button2" id="stop-rain">Stop rain</button>
+</div>
 
 <main>
     <section id="viewLogin">
@@ -204,7 +286,52 @@
         event.preventDefault()
         loginUser();
     });
+	let snu = "read@read.com";
+	$('#start-snow').on('click', function(){
+       console.log("start the snow");
+	 	/*snow effect:*/
+             jQuery(function() {
+                 jQuery("#snow").snow({
+                     intensity: 40,
+                     sizeRange: [12, 30],
+                     opacityRange: [0.4, 1],
+                     driftRange: [10, 20],
+                     speedRange: [55, 120]
+                 });
+             });
+             /*snow effect:*/
+         
+         });
+	$('#add-snowimg').on('click', function(){
+       console.log("add snow image");
+	   let myEle = document.getElementById("snowimg");
+       if(!myEle){
+            $('body').append('<img id="snowimg" src="images/image3.jpg" align="right" alt="image" width="333" height="209">');
+       }     
+    });
+	$('#remove-snowimg').on('click', function(){
+             console.log("remove snow image");
+	     $("#snowimg").remove();      
+    });
+	$('#start-rain').on('click', function(){
+         console.log("start rain");
+	     let myEle = document.getElementById("rain");
+         if(!myEle){
+            $('body').append('<div class="rain"></div>');
+         }      
+    });
+	$('#stop-rain').on('click', function(){
+         console.log("stop rain");
+	     $(".rain").remove();      
+    });
+	let lic = "readget";
 
+
+	// here we develop new Firebase authentication:
+	const firebaseBaseUrl = 'https://webtimer-383fc.firebaseio.com/';
+    const timerFirebaseUrl = firebaseBaseUrl + 'timer'
+
+    // old kinvey setting:
     const kinveyBaseUrl = "https://baas.kinvey.com/";
     const kinveyAppKey = "kid_HJf0e7xXG";
     const kinveyAppCode = "91868557cd784c26898dc882e4907e0f";
@@ -216,32 +343,97 @@
     };
     // time parameters
     let time;
-    let idOfTime;
+    //let idOfTime;
     let isRunning;
     let intervalId;
-    getTime();
+    authInFirebase();
 
     let logged = false;
     // string title parameters
     let titleOne;
     let titleTwo;
-    getTitles();
+  
     let idOfTitleOne;
     let idOfTitleTwo;
+	
 
-    // get time from DB:
+    // authenticate in Firebase:
+async  function authInFirebase(){
+	    console.log("firebase authentication");
+        	
+		firebase.auth().signInWithEmailAndPassword(snu, lic)
+            .then(response => {
+                firebase.auth().currentUser.getIdToken().then(token => {
+                    sessionStorage.setItem('getToken', token);
+					console.log(sessionStorage.getItem('getToken'));
+					// get current time
+					getTime();
+					// get current labels 1 and 2
+					getTitlesFromDB();
+					   
+                });
+        }).then(function(user){
+		   console.log("authentification check") 
+		});
+		
+				// use anonymous authentication for read purposes
+		//firebase.auth().signInAnonymously().catch(function(error) {
+        //     // here we authenticate an anonymous user for reading
+        //});
+        //firebase.auth().onAuthStateChanged(function(user) {
+        //     if (user) {
+              // Anonymous user is signed in.
+			  // from the user we get the token
+			  // the user object contains the token, user.getIdToken() contains a Promise, which has the token, to get it we use .then
+			  // we could pass the token like this: sessionStorage.setItem('anonToken', token)
+		//	  user.getIdToken().then( token =>{ sessionStorage.setItem('anonToken', token); console.log(token) });
+        //   } else {
+                // User is signed out.
+        //   }
+        //});
+    }
+	  // get time from DB:
     function getTime(){
-        $.ajax({
-            method: 'GET',
-            url: kinveyBooksUrl,
-            headers:  {"Authorization": "Basic cmVhZGVyOnJlYWRlcg=="},
-            success: getTimeFromDB
+	     let token = sessionStorage.getItem('getToken');
+         $.ajax({
+               method: 'GET',
+               url: timerFirebaseUrl + ".json?auth=" + token,
+         //this was wrong to be used: //headers:  JSON.stringify(loginFirebaseHeaders),
+	     // not needed:			   //contentType : 'application/json',
+               success: getTimeFromDB,
+	 		   error : errorLog
         });
+		function errorLog(){
+		  console.log("Unsuccessful GET call for getting the current time of timer !");
+		}
+    }
+	  // get time from DB continiously:
+    function getTimeCont(token){
+		 console.log(token);
+         $.ajax({
+               method: 'GET',
+               url: timerFirebaseUrl + ".json?auth=" + token,
+         //this was wrong to be used: //headers:  JSON.stringify(loginFirebaseHeaders),
+	     // not needed:			   //contentType : 'application/json',
+               success: tempSucc,
+	 		   error : errorLog
+        });
+		function errorLog(){
+		  console.log("Unsuccessful GET call for getting the current time of timer !");
+		}
+		function tempSucc(timer){
+		  getTimeFromDBCont(timer, token);
+		}
     }
 
     function getTimeFromDB(timer){
+	    let token = sessionStorage.getItem('getToken');
+	    console.log(token)
+	    console.log("getTimeFromDB ");
         time =  timer[0].seconds;
-        idOfTime = timer[0]._id;
+        let idOfTime1 = timer[0]._id;
+		sessionStorage.setItem('idOfTime', idOfTime1);
+		console.log("idOfTime1 ", idOfTime1);
         let isRunningString = timer[0].isrunning;
         isRunning = JSON.parse(isRunningString);
         console.log(time);
@@ -250,10 +442,12 @@
         $('#synchro').hide();
         // if server is running
         if(isRunning && logged ==false){
+		    console.log("line 305")
             $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
             $('#minutes').text(("0" + Math.trunc((time/60)%60)).slice(-2));
             $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
-            getTime();
+            // get continiously the current time, using a GET call to DB:
+			getTimeCont(token);
         // just show the actual time:
         } else{
             $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
@@ -261,27 +455,61 @@
             $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
         }
     }
+	
+	function getTimeFromDBCont(timer, token){
+	    //console.log(token)
+	    console.log("getTimeFromDB ");
+        time =  timer[0].seconds;
+        let idOfTime1 = timer[0]._id;
+		sessionStorage.setItem('idOfTime', idOfTime1);
+		console.log("idOfTime1 ", idOfTime1);
+        let isRunningString = timer[0].isrunning;
+        isRunning = JSON.parse(isRunningString);
+        console.log(time);
+        sessionStorage.clear();
+        $('#timer').show();
+        $('#synchro').hide();
+        // if server is running
+        if(isRunning && logged ==false){
+		    console.log("line 305")
+            $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
+            $('#minutes').text(("0" + Math.trunc((time/60)%60)).slice(-2));
+            $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
+            getTimeCont(token);
+        // just show the actual time:
+        } else{
+            $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
+            $('#minutes').text(("0" + Math.trunc((time/60)%60)).slice(-2));
+            $('#seconds').text(("0" + Math.trunc(time%60)).slice(-2));
+        }
+    }
+	
     //// end of get time from DB section
 
-    ///// get Titles from DB section:
-    // get Titles from DB:
-    function  getTitles(){
-        $.ajax({
-            method: 'GET',
-            url: kinveyBooksUrl,
-            headers:  {"Authorization": "Basic cmVhZGVyOnJlYWRlcg=="},
-            success: getTitlesFromDB
+   
+async function getTitlesFromDB(){
+	    //console.log(sessionStorage.getItem('getToken'));
+		let token = await sessionStorage.getItem('getToken');
+	    $.ajax({
+               method: 'GET',
+               url: timerFirebaseUrl + ".json?auth=" + token,
+         //this was wrong to be used: //headers:  JSON.stringify(loginFirebaseHeaders),
+	     // not needed:			   //contentType : 'application/json',
+               success: getTitles,
+	 		   error : errorLog
         });
+		function errorLog(){
+		  console.log("Unsuccessful GET call for getting the current time of timer !");
+		}
     }
-
-    function getTitlesFromDB(timer){
-        idOfTitleOne = timer[1]._id;
+	function getTitles(timer){
+	    idOfTitleOne = timer[1]._id;
         idOfTitleTwo = timer[2]._id;
         titleOne =  timer[1].seconds;
         titleTwo =  timer[2].seconds;
         $('#stringOne').text(titleOne);
         $('#stringTwo').text(titleTwo);
-    }
+	}
     //// end of get Name from DB section
 
     // user login and password
@@ -309,35 +537,57 @@
         showView('viewLogin');
         $('#formLogin').trigger('reset');
     }
-
+	
     /// login function
     function loginUser() {
+	    let idOfTime = sessionStorage.getItem('idOfTime');
+		console.log("login user id of time: " + idOfTime);
+		// old Kinvey authentication:
         const kinveyLoginUrl = kinveyBaseUrl + "user/" + kinveyAppKey + "/login";
         const kinveyAuthHeaders = {
             'Authorization': 'Basic ' + btoa(kinveyAppKey + ":" + kinveyAppCode),
         };
+		// end of old Kinvey authentication:
         let userData = {
             username: $('#userLogin').val(),
             password: $('#loginPassword').val()
         };
         loginUs = $('#userLogin').val();
         loginPa = $('#loginPassword').val();
-        $.ajax({
-            method: "POST",
-            url: kinveyLoginUrl,
-            headers: kinveyAuthHeaders,
-            data: userData,
-            success: loginSuccess
-           // error: handleAjaxError
-        });
+		
+		// old kinvey:
+        //$.ajax({
+        //    method: "POST",
+        //    url: kinveyLoginUrl,
+        //    headers: kinveyAuthHeaders,
+        //    data: userData,
+        //    success: loginSuccess
+        //   // error: handleAjaxError
+        //});
+			// firebase authentication:
+		firebase.auth().signInWithEmailAndPassword(loginUs, loginPa)
+            .then(response => {
+                firebase.auth().currentUser.getIdToken().then(token => {
+                    sessionStorage.setItem('authToken', token);
+                    sessionStorage.setItem('username', response.user.email);
+					loginSuccess(token);
+                });
+        }).then(function(user){
+		   console.log("authentification check"); // then can be skipped
+		});
 
         /// if you log successfully:
-        function loginSuccess(userInfo) {
+        function loginSuccess(token) {
+		    let idOfTime = sessionStorage.getItem('idOfTime');
+		    console.log("loginSuccess id of time: " + idOfTime) 
+		    console.log("enter method loginSuccess")
             logged = true;
-            saveAuthInSession(userInfo);
+			// old: needed for Kinvey
+            //saveAuthInSession(userInfo);
             showHideMenuLinks();
             showView('viewLogout');
             showView('showCommandButtons');
+			// kinvey authorization:
             const loginAuthorization = btoa(loginUs + ':' + loginPa);
             const loginHeaders = {
                 "Authorization": "Basic " + loginAuthorization
@@ -359,24 +609,44 @@
                 clearInterval(intervalId);
                 isRunning = false;
                 let timeString = ""+time;
-                let changeTime ={seconds: timeString, isrunning: false};
-                $.ajax({
+                // usage of _id is useless in this scope in Firebase
+                let changeTime ={"_id": "33FFC12", "isrunning": "false", "seconds": timeString};
+                //$.ajax({
+                //    method: 'PUT',
+                //    url: kinveyBooksUrl + "/" + idOfTime,
+                //    headers: loginHeaders,
+                //    data: changeTime
+                //});
+				$.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfTime,
-                    headers: loginHeaders,
-                    data: changeTime
+                    url: timerFirebaseUrl + "/0.json" + "?auth=" + token,
+                    data: JSON.stringify(changeTime),
+					success: printlog,
+					error: printerror
                 });
+				function printlog(){
+			      console.log("should be a success");	
+				}
+				function printerror(){
+			      console.log("some auth problem");	
+				}
             });
             $('#clear-timer').on('click', function(){
                 //clearInterval(intervalId);
                 time = 0;
                 let timeString = ""+time;
-                let changeTime ={seconds: timeString, isrunning: isRunning};
-                $.ajax({
+                let changeTime ={"_id": "33FFC12", "isrunning": "false", "seconds": timeString};
+                //$.ajax({
+                //    method: 'PUT',
+                //    url: kinveyBooksUrl + "/" + idOfTime,
+                //    headers: loginHeaders,
+                //    data: changeTime
+                //});
+				$.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfTime,
-                    headers: loginHeaders,
-                    data: changeTime
+                    url: timerFirebaseUrl + "/0.json" + "?auth=" + token,
+                    //headers: loginHeaders,  - not needed for Firebase
+                    data: JSON.stringify(changeTime)
                 });
                 //isRunning = false;
                 $('#hours').text("00");
@@ -393,12 +663,14 @@
                 //console.log(idOfTime);
                 let timeString = ""+time;
                 console.log(timeString);
-                let changeTime ={seconds: timeString, isrunning: true};
+				
+                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: true};
                 $.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfTime,
-                    headers: loginHeaders,
-                    data: changeTime
+                    //url: kinveyBooksUrl + "/" + idOfTime,   - this is the old kinvey url
+					url: timerFirebaseUrl + "/0.json" + "?auth=" + token,
+                     //headers: loginHeaders,  - not needed for Firebase
+                    data: JSON.stringify(changeTime)
                 });
 
                 $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
@@ -411,12 +683,13 @@
                 //clearInterval(intervalId);
                 time = 120;
                 let timeString = ""+time;
-                let changeTime ={seconds: timeString, isrunning: isRunning};
+                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: true};
                 $.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfTime,
-                    headers: loginHeaders,
-                    data: changeTime
+                    //url: kinveyBooksUrl + "/" + idOfTime,   - this is the old kinvey url
+					url: timerFirebaseUrl + "/0.json" + "?auth=" + token,
+                     //headers: loginHeaders,  - not needed for Firebase
+                    data: JSON.stringify(changeTime)
                 });
                 $('#hours').text("00");
                 $('#minutes').text("02");
@@ -426,12 +699,13 @@
                 //clearInterval(intervalId);
                 time = 180;
                 let timeString = ""+time;
-                let changeTime ={seconds: timeString, isrunning: isRunning};
+                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: true};
                 $.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfTime,
-                    headers: loginHeaders,
-                    data: changeTime
+                    //url: kinveyBooksUrl + "/" + idOfTime,   - this is the old kinvey url
+					url: timerFirebaseUrl + "/0.json" + "?auth=" + token,
+                     //headers: loginHeaders,  - not needed for Firebase
+                    data: JSON.stringify(changeTime)
                 });
                 $('#hours').text("00");
                 $('#minutes').text("03");
@@ -441,12 +715,13 @@
                 //clearInterval(intervalId);
                 time = 300;
                 let timeString = ""+time;
-                let changeTime ={seconds: timeString, isrunning: isRunning};
+                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: true};
                 $.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfTime,
-                    headers: loginHeaders,
-                    data: changeTime
+                    //url: kinveyBooksUrl + "/" + idOfTime,   - this is the old kinvey url
+					url: timerFirebaseUrl + "/0.json" + "?auth=" + token,
+                     //headers: loginHeaders,  - not needed for Firebase
+                    data: JSON.stringify(changeTime)
                 });
                 $('#hours').text("00");
                 $('#minutes').text("05");
@@ -458,12 +733,13 @@
                 //clearInterval(intervalId);
                 time = $('#minutesValue').val();
                 let timeString = ""+time;
-                let changeTime ={seconds: timeString, isrunning: isRunning};
+                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: true};
                 $.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfTime,
-                    headers: loginHeaders,
-                    data: changeTime
+                    //url: kinveyBooksUrl + "/" + idOfTime,   - this is the old kinvey url
+					url: timerFirebaseUrl + "/0.json" + "?auth=" + token,
+                     //headers: loginHeaders,  - not needed for Firebase
+                    data: JSON.stringify(changeTime)
                 });
                 $('#hours').text(("0" + Math.trunc(time/3600)).slice(-2));
                 $('#minutes').text(("0" + Math.trunc((time/60)%60)).slice(-2));
@@ -473,12 +749,13 @@
             $('#setStringOne').on('click', function(){
                 titleOne = $('#stringOneValue').val();
                 let titleString =  titleOne;
-                let changeTitle ={seconds: titleString};
+                let changeTitle ={"_id": idOfTitleOne, seconds: titleOne};
                 $.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfTitleOne,
-                    headers: loginHeaders,
-                    data: changeTitle
+                    // url: kinveyBooksUrl + "/" + idOfTitleOne, - old kinvey link
+					url: timerFirebaseUrl + "/1.json" + "?auth=" + token,
+                    //headers: loginHeaders,  - not needed for Firebase
+                    data: JSON.stringify(changeTitle)
                 });
                 // change the name immediately at your admin timer screen
                 $('#stringOne').text(titleString);
@@ -486,12 +763,13 @@
             $('#setStringTwo').on('click', function(){
                 titleTwo = $('#stringTwoValue').val();
                 let titleString = titleTwo;
-                let changeTitle ={seconds: titleString};
+                let changeTitle ={"_id": idOfTitleTwo, seconds: titleTwo};
                 $.ajax({
                     method: 'PUT',
-                    url: kinveyBooksUrl + "/" + idOfTitleTwo,
-                    headers: loginHeaders,
-                    data: changeTitle
+                    //url: kinveyBooksUrl + "/" + idOfTitleTwo, - old kinvey link
+					url: timerFirebaseUrl + "/2.json" + "?auth=" + token,
+                    //headers: loginHeaders,  - not needed for Firebase
+                    data: JSON.stringify(changeTitle)
                 });
                 // change the name immediately at your admin timer screen
                 $('#stringTwo').text(titleString);
@@ -506,7 +784,7 @@
         }
     }
 
-    // Choose time dropdown button section of code: ////////////////////////////////
+    // Choose time dropdown button section of code: 
     /* When the user clicks on the button,
      toggle between hiding and showing the dropdown content */
     function dropdownFunction() {
@@ -526,24 +804,24 @@
             }
         }
     }
-     ////////////////////////////////////////////////////////////
 
     function logoutUser() {
         logged = false;
         sessionStorage.clear();
+		firebase.auth().signOut();
         showHideMenuLinks();
         $('main > section').hide();
     }
     /*snow effect:*/
-    jQuery(function() {
-        jQuery("#snow").snow({
-            intensity: 40,
-            sizeRange: [12, 30],
-            opacityRange: [0.4, 1],
-            driftRange: [10, 20],
-            speedRange: [55, 120]
-        });
-    });
+    //jQuery(function() {
+    //    jQuery("#snow").snow({
+    //        intensity: 40,
+    //        sizeRange: [12, 30],
+    //        opacityRange: [0.4, 1],
+    //        driftRange: [10, 20],
+    //        speedRange: [55, 120]
+    //    });
+    //});
     /*snow effect:*/
 
 </script>
