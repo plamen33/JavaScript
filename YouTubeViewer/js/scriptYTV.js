@@ -55,7 +55,7 @@ function search(token, q) {
             part: 'snippet, id',  // parameter from YouTube API
             q: q,
             pageToken: token,
-            key: 'AIzaSyCesJtY39LzTpR4XaMetWopcWgWfv_GZ0I' // API Key
+            key: 'AIzaSyCesJtY39LzTpR4XaMetWopcWgWfv_GZ0I' // API Key 
         },
         function(data){ // see below re: "data"
             let nextPageToken = data.nextPageToken;
