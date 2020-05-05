@@ -2,9 +2,9 @@
 
 [ToDoList Angular Project](https://plamen33.github.io/ToDoList-Angular)
 
-[Marketplace Project](https://plamen33.github.io/Marketplace-JS/#/)
+[Marketplace Project](https://plamen33.github.io/Marketplace-JS/#/)  - project is temporary unavailable due to Kinvey policy
 
-[Book Library Project](https://plamen33.github.io/JavaScript/BookLibrary/books.html)
+[Book Library Project](https://plamen33.github.io/JavaScript/BookLibrary/books.html) - project is temporary unavailable due to Kinvey policy, migration to Firebase is planned
 
 [JavaScript webpainter](https://plamen33.github.io/JavaScript/webpainter.html)
 
