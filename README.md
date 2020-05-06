@@ -4,7 +4,7 @@
 
 [Marketplace Project](https://plamen33.github.io/Marketplace-JS/#/)  - project is temporary unavailable due to Kinvey policy
 
-[Book Library Project](https://plamen33.github.io/JavaScript/BookLibrary/books.html) - project is temporary unavailable due to Kinvey policy, migration to Firebase is planned
+[Book Library Project](https://plamen33.github.io/JavaScript/BookLibrary/books.html) - migration to Firebase in progress...part of the project is available..
 
 [JavaScript webpainter](https://plamen33.github.io/JavaScript/webpainter.html)
 

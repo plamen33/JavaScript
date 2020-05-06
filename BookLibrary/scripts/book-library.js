@@ -1,4 +1,22 @@
 function startApplication(){
+	//firebase initialization
+
+    // Your web app's Firebase configuration
+     var firebaseConfig = {
+       apiKey: "AIzaSyAZClmVVZwgBXFP2tl3cZzsn0GRkISIeV4",
+       authDomain: "booklibrary-57192.firebaseapp.com",
+       databaseURL: "https://booklibrary-57192.firebaseio.com",
+       projectId: "booklibrary-57192",
+       storageBucket: "booklibrary-57192.appspot.com",
+       messagingSenderId: "209763431057",
+       appId: "1:209763431057:web:a88f688eeedec5f61a8530",
+       measurementId: "G-M3PKSQYHHL"
+     };
+     // Initialize Firebase
+     firebase.initializeApp(firebaseConfig);
+    
+ 
+
 
    'use strict';
 
@@ -30,7 +48,9 @@ function startApplication(){
 	
     $('#formLogin').submit(function (e) {
         e.preventDefault();
-        login();
+		authenticateInFirebase();
+		//let token = tokenReturn();
+        //login(token);
     });
     $('#formRegister').submit(function (e) {
         e.preventDefault();
@@ -72,6 +92,7 @@ function startApplication(){
             $('#linkCreateBooks').hide();
             $('#linkLogout').hide();
         } else {
+			console.log("user logged in hide panels");
             /// user logged in, so we hide these panels
             $('#linkLogin').hide();
             $('#linkRegister').hide();
@@ -104,36 +125,69 @@ function startApplication(){
     function showLoginView() {
         showView('viewLogin');
     }
+	
+	// here we develop new Firebase authentication:
+	const firebaseBaseUrl = 'https://booklibrary-57192.firebaseio.com/';
+    const timerFirebaseUrl = firebaseBaseUrl + 'books'
+	
+	
 
-    function login() {
-        const kinveyLoginUrl = kinveyBaseUrl + 'user/' + kinveyAppKey + '/login';
-        const kinveyAuthHeaders = {
-            'Authorization': 'Basic ' + btoa(kinveyAppKey + ":" + kinveyAppSecret),
-        };
-        let userData = {
-            username: $('#loginUser').val(),
-            password: $('#loginPass').val()
-        };
-        $.ajax({
-            method: 'POST',
-            url: kinveyLoginUrl,
-            headers: kinveyAuthHeaders,
-            data: userData,
-            success: loginSuccess,
-            error: handleAjaxError
-        });
-        function loginSuccess(response) {
-            let userAuth = response._kmd.authtoken;
-            sessionStorage.setItem('authToken', userAuth);
-            // save the user in sessionStorage:
-            let userId = response._id; // get the user id
-            sessionStorage.setItem('userId', userId);
-			$('#loggedInUser').text(`Welcome, ${response.username}!`);
-            showHideMenuLinks();
-            showInfo('Login successful.');
-			listBooks();
-        }
-    }
+	function authenticateInFirebase(){
+			// firebase authentication:
+		firebase.auth().signInWithEmailAndPassword($('#loginUser').val(), $('#loginPass').val())
+            .then(response => {
+                firebase.auth().currentUser.getIdToken().then(token => {
+                    sessionStorage.setItem('authToken', token);
+                    sessionStorage.setItem('username', response.user.email);		
+                    sessionStorage.setItem('userId', response.user.uid);
+					$('#loggedInUser').text(`Welcome, ${response.user.email}!`);
+					tokenReturn(token);
+					showHideMenuLinks();
+                    showInfo('Login successful.');
+	                listBooks(token);
+                });
+        }).then(function(user){
+		   console.log("authentification check"); // then can be skipped
+		});
+      
+	}
+	function tokenReturn(token){
+		sessionStorage.setItem('authToken', token);
+		console.log("tokenReturn :" + token);
+		return token;
+	}
+
+	
+		
+    //function login(token) {
+    //    const kinveyLoginUrl = kinveyBaseUrl + 'user/' + kinveyAppKey + '/login';
+    //    const kinveyAuthHeaders = {
+    //        'Authorization': 'Basic ' + btoa(kinveyAppKey + ":" + kinveyAppSecret),
+    //    };
+    //    let userData = {
+    //        username: $('#loginUser').val(),
+    //        password: $('#loginPass').val()
+    //    };
+        //$.ajax({
+        //    method: 'POST',
+        //    url: kinveyLoginUrl,
+        //    headers: kinveyAuthHeaders,
+        //    data: userData,
+        //    success: loginSuccess,
+        //    error: handleAjaxError
+        //});
+    //   function loginSuccess(response) {
+    //        let userAuth = response._kmd.authtoken;
+    //        sessionStorage.setItem('authToken', userAuth);
+    //        // save the user in sessionStorage:
+    //        let userId = response._id; // get the user id
+    //        sessionStorage.setItem('userId', userId);
+	//		$('#loggedInUser').text(`Welcome, ${response.username}!`);
+    //        showHideMenuLinks();
+    //        showInfo('Login successful.');
+	//        listBooks();
+    //    }
+    //}
 
      function handleAjaxError (response) {
         let errorMsg = JSON.stringify(response);
@@ -180,19 +234,29 @@ function startApplication(){
          }
     }
 
-    function listBooks() {
-
+    function listBooks(token) {
+        console.log("list books");
         //$('#books').empty();
         showView('viewBooks');
 
-        const kinveyBooksUrl = kinveyBaseUrl + "appdata/" + kinveyAppKey + "/books";
-        
-        $.ajax({
-            method: 'GET',
-            url: kinveyBooksUrl,
-            headers: getKinveyUserAuthHeaders(),
-            success: displayPaginationAndBooks,
-            error: handleAjaxError
+		// old kinvey call to get books looked liked this:
+        //const kinveyBooksUrl = kinveyBaseUrl + "appdata/" + kinveyAppKey + "/books";
+        //$.ajax({
+        //    method: 'GET',
+        //    url: kinveyBooksUrl,
+        //    headers: getKinveyUserAuthHeaders(),
+        //    success: displayPaginationAndBooks,
+        //    error: handleAjaxError
+        //});
+		
+		// Firebase get call to get the books
+		$.ajax({
+               method: 'GET',
+               url: timerFirebaseUrl + ".json?auth=" + token,
+         //this was wrong to be used: //headers:  JSON.stringify(loginFirebaseHeaders),
+	     // not needed:			   //contentType : 'application/json',
+               success: displayPaginationAndBooks,
+	 		   error : handleAjaxError
         });
     }
 
@@ -290,6 +354,8 @@ function startApplication(){
     }
 
     function displayPaginationAndBooks(books) {
+		console.log("enter displayPaginationAndBooks methods - successful GET call for books");
+		console.log("user ID is: " + sessionStorage.getItem('userId'));
         // display the list of books in descending order by creation
         let booksReversed = books.reverse();
         showView('viewBooks');
@@ -328,7 +394,7 @@ function startApplication(){
                              .append($(`<td>${booksReversed[i].author}</td>`))
                              .append($(`<td>${booksReversed[i].description}</td>`))
                     );
-                    if(booksReversed[i]._acl.creator === sessionStorage.getItem('userId')) {
+                    if(booksReversed[i]._aclcreator === sessionStorage.getItem('userId')) {
                         $(tr).append(
                             $(`<td>`).append(
                                 $('<a href=\"#\" class=\"editButton\">Edit</a>').on('click', function () {
