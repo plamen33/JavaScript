@@ -14,9 +14,6 @@ function startApplication(){
      };
      // Initialize Firebase
      firebase.initializeApp(firebaseConfig);
-    
- 
-
 
    'use strict';
 
@@ -37,7 +34,7 @@ function startApplication(){
     $('#linkHome').click(showHomeView);  // these code activates the form of view which we set -> when we click on the screen the specific form/page opens
     $('#linkLogin').click(showLoginView);
     $('#linkRegister').click(showRegisterView)
-    $('#linkListBooks').click(listBooks);
+    $('#linkListBooks').click(listBooksLink);
     $('#linkCreateBooks').click(showCreateBookView);
     $('#linkLogout').click(logout);  /// when we click on the Logout link activate the logout function and do the logout itself
     
@@ -115,7 +112,7 @@ function startApplication(){
         $('#errorBox').show();
 		setTimeout(function () {
             $('#errorBox').fadeOut()
-        }, 5000);
+        }, 12000);
     }
 
     function showHomeView(){
@@ -148,12 +145,17 @@ function startApplication(){
                 });
         }).then(function(user){
 		   console.log("authentification check"); // then can be skipped
-		});
+		}).catch(function(error) {
+                console.log('Error logging in Firebase: ', error);
+				//console.log(Object.entries(error));
+				let errorArray = Object.entries(error);
+				console.log("Login failed. Firebase response is: " + errorArray[0][1] + " " + errorArray[1][1]);
+				showError("Login failed. Firebase response is: " + errorArray[0][1] + " " + errorArray[1][1]);
+        });
       
 	}
 	function tokenReturn(token){
 		sessionStorage.setItem('authToken', token);
-		console.log("tokenReturn :" + token);
 		return token;
 	}
 
@@ -205,34 +207,61 @@ function startApplication(){
     }
 
     function register(){
-        const kinveyRegisterUrl = kinveyBaseUrl + 'user/' + kinveyAppKey + '/';
-        const kinveyAuthHeaders = {
-            'Authorization':'Basic ' + btoa(kinveyAppKey + ":" + kinveyAppSecret),
-        };
+		// old kinvey code:
+        //const kinveyRegisterUrl = kinveyBaseUrl + 'user/' + kinveyAppKey + '/';
+        //const kinveyAuthHeaders = {
+        //    'Authorization':'Basic ' + btoa(kinveyAppKey + ":" + kinveyAppSecret),
+        //};
+		//  $.ajax({
+        //    method: 'POST',
+        //   url: kinveyRegisterUrl,
+        //    headers: kinveyAuthHeaders,
+        //    data: userData,
+        //    success: registerSuccess,
+        //    error: handleAjaxError
+        //});
+		// function used for kinvey
+        //function registerSuccess(response){
+        //     let userAuth = response._kmd.authtoken;
+        //     sessionStorage.setItem('authToken', userAuth);
+        //     // save the user in sessionStorage:
+        //     let userId = response._id; // get the user id
+        //     sessionStorage.setItem('userId', userId);
+        //	   other code removed from method	
+        //}
         let userData = {
             username: $('#registerUser').val(),
             password: $('#registerPass').val()
         };
-        $.ajax({
-            method: 'POST',
-            url: kinveyRegisterUrl,
-            headers: kinveyAuthHeaders,
-            data: userData,
-            success: registerSuccess,
-            error: handleAjaxError
-        });
-        function registerSuccess(response){
-             let userAuth = response._kmd.authtoken;
-             sessionStorage.setItem('authToken', userAuth);
-             // save the user in sessionStorage:
-             let userId = response._id; // get the user id
-             sessionStorage.setItem('userId', userId);
-             $('#loggedInUser').text(`Welcome, ${response.username}!`);
-             showHideMenuLinks();
-             listBooks();
-             showInfo('User registration successful.');
-         }
+		
+        firebase.auth().createUserWithEmailAndPassword($('#registerUser').val(), $('#registerPass').val())
+            .then(response => {
+                firebase.auth().currentUser.getIdToken().then(token => {
+                    sessionStorage.setItem('authToken', token);
+                    sessionStorage.setItem('username', response.user.email);		
+                    sessionStorage.setItem('userId', response.user.uid);
+					$('#loggedInUser').text(`Welcome, ${response.user.email}!`);
+					showHideMenuLinks();
+                    showInfo('User registration successful.');
+					listBooks(token);
+                });
+            }).then(() => {
+				// clear register user and password fields:
+                $('#registerUser').val("");
+                $('#registerPass').val("");
+            }).catch(function(error) {
+                console.log('Error creating new user in Firebase: ', error);
+				//console.log(Object.entries(error));
+				let errorArray = Object.entries(error);
+				showError("Registration failed. Firebase response is: " + errorArray[0][1] + " " + errorArray[1][1]);
+            });
     }
+	
+	// enter method when List Books link is clicked
+	function listBooksLink(){
+		let token = sessionStorage.getItem('authToken');
+		listBooks(token);
+	}
 
     function listBooks(token) {
         console.log("list books");
@@ -260,20 +289,31 @@ function startApplication(){
         });
     }
 
-    function loadBookForEdit(book) {
-        $.ajax({
-            method: "GET",
-            url: kinveyBaseUrl + "appdata/" + kinveyAppKey + "/books/" + book._id,
-            headers: getKinveyUserAuthHeaders(),
-            success: loadBookForEditSuccess,
-            error: handleAjaxError
+    function loadBookForEdit(book, token) {
+        //$.ajax({
+        //    method: "GET",
+        //    url: kinveyBaseUrl + "appdata/" + kinveyAppKey + "/books/" + book._id,
+        //    headers: getKinveyUserAuthHeaders(),
+        //    success: loadBookForEditSuccess,
+        //    error: handleAjaxError
+        //});
+		
+		// Firebase get call to get the book
+		$.ajax({
+               method: 'GET',
+               url: timerFirebaseUrl + "/" + book[0] + ".json?auth=" + token,
+         //this was wrong to be used: //headers:  JSON.stringify(loginFirebaseHeaders),
+	     // not needed:			   //contentType : 'application/json',
+               success: loadBookForEditSuccess,
+	 		   error : handleAjaxError
         });
-
-        function loadBookForEditSuccess(book) {
-            $('#formEditBook input[name=id]').val(book._id);
-            $('#formEditBook input[name=title]').val(book.title);
-            $('#formEditBook input[name=author]').val(book.author);
-            $('#formEditBook textarea[name=description]').val(book.description);
+		
+        function loadBookForEditSuccess(latestBookValue) {
+			console.log("book data loaded from DB successfully !")
+            $('#formEditBook input[name=id]').val(book[0]); // book[0] is the ID (external ID of the record in Firebase)
+            $('#formEditBook input[name=title]').val(latestBookValue.title);
+            $('#formEditBook input[name=author]').val(latestBookValue.author);
+            $('#formEditBook textarea[name=description]').val(latestBookValue.description);
 
             showView('viewEditBook');
         }
@@ -285,18 +325,27 @@ function startApplication(){
         };
     }
 
-    function deleteBook(book){
-        const kinveyDeleteUrl = kinveyBaseUrl + 'appdata/' + kinveyAppKey + '/books/' + book._id;
-        $.ajax({
-            method: "DELETE",
-            url: kinveyDeleteUrl,
-            headers: getKinveyUserAuthHeaders(),
-            success: deleteBookSuccess,
-            error: handleAjaxError
+    function deleteBook(book, token){
+		// old kinvey delete code:
+        //const kinveyDeleteUrl = kinveyBaseUrl + 'appdata/' + kinveyAppKey + '/books/' + book._id;
+        //$.ajax({
+        //    method: "DELETE",
+        //    url: kinveyDeleteUrl,
+        //    headers: getKinveyUserAuthHeaders(),
+        //    success: deleteBookSuccess,
+        //    error: handleAjaxError
+        //});
+		
+		$.ajax({
+               method: 'DELETE',
+               url: timerFirebaseUrl + "/" + book[0] + ".json?auth=" + token,
+               success: deleteBookSuccess,
+	 		   error : handleAjaxError
         });
         function deleteBookSuccess(response){
-            listBooks();
-            showInfo("Book was successfully deleted !");
+			showInfo("Book was successfully deleted !");
+            listBooks(token);
+           
         }
     }
 
@@ -305,59 +354,95 @@ function startApplication(){
     }
 
     function createBook(){
-        const kinveyBooksUrl = kinveyBaseUrl + 'appdata/' + kinveyAppKey + '/books';
-
-        let bookData = {
+        let token = sessionStorage.getItem('authToken');
+        let creatorID = sessionStorage.getItem('userId');		
+        // let bookID = Math.random().toString(33).substr(2, 7) + Date.now(); // no need to create self-made ID
+		
+		let bookData = { 
+			_aclcreator: creatorID,
             title: $('#bookTitle').val(),
             author: $('#bookAuthor').val(),
             description: $('#bookDescription').val().substr(0,100)
         };
-        $.ajax({
+		//   console.log("book data : " + bookData)
+		$.ajax({
             method: 'POST',
-            url: kinveyBooksUrl,
-            headers: getKinveyUserAuthHeaders(),
-            data: bookData,
-            success: createBookSuccess,
-            error: handleAjaxError
+            url: timerFirebaseUrl + ".json" + "?auth=" + token,
+            data: JSON.stringify(bookData),
+		    success: createBookSuccess,
+		    error: handleAjaxError
         });
+       
+
+		// old kinvey data POST call:
+		//const kinveyBooksUrl = kinveyBaseUrl + 'appdata/' + kinveyAppKey + '/books';
+        //$.ajax({
+        //    method: 'POST',
+        //    url: kinveyBooksUrl,
+        //    headers: getKinveyUserAuthHeaders(),
+        //    data: bookData,
+        //    success: createBookSuccess,
+        //    error: handleAjaxError
+        //});
         function createBookSuccess(response){
-            listBooks();
+            listBooks(token);
             showInfo('Book created.');
         }
     }
-
+    //Math.random().toString(33).substr(2, 7) + Date.now();
     function editBook(){
+		let token = sessionStorage.getItem('authToken');
         let bookData = {
-            title: $('#formEditBook input[name=title]').val(),
+			title: $('#formEditBook input[name=title]').val(),
             author: $('#formEditBook input[name=author]').val(),
             description: $('#formEditBook textarea[name=description]').val().substr(0,100)
         };
-        $.ajax({
-            method: "PUT",
-            url: kinveyBaseUrl + "appdata/" + kinveyAppKey + "/books/" + $('#formEditBook input[name=id]').val(),
-            headers: getKinveyUserAuthHeaders(),
-            data: bookData,
-            success: editBookSuccess,
-            error: handleAjaxError
-        });
+		// old kinvey call, the call was based on the id of the book:
+        //$.ajax({
+        //    method: "PUT",
+        //    url: kinveyBaseUrl + "appdata/" + kinveyAppKey + "/books/" + $('#formEditBook input[name=id]').val(),
+        //    headers: getKinveyUserAuthHeaders(),
+        //    data: bookData,
+        //    success: editBookSuccess,
+        //    error: handleAjaxError
+        //});
+		// with PATCH we make a partial update, instead of whole update, as PUT does:
+		console.log("Id is: " + $('#formEditBook input[name=id]').val())
+	    $.ajax({
+            method: 'PATCH',
+            url: timerFirebaseUrl + "/" + $('#formEditBook input[name=id]').val() +".json" + "?auth=" + token,
+            data: JSON.stringify(bookData),
+	    	success: editBookSuccess,
+	    	error: handleAjaxError
+         });
         function editBookSuccess(response){
-            listBooks();
+			console.log("book successfully edited !");
+            listBooks(token);
             showInfo("Book edited.");
         }
     }
 
     function logout(){
         sessionStorage.clear();
+		firebase.auth().signOut();
 		 $('#loggedInUser').text("");
         showHideMenuLinks();
         showView('viewHome');
     }
 
     function displayPaginationAndBooks(books) {
-		console.log("enter displayPaginationAndBooks methods - successful GET call for books");
-		console.log("user ID is: " + sessionStorage.getItem('userId'));
+		let token = sessionStorage.getItem('authToken');
         // display the list of books in descending order by creation
-        let booksReversed = books.reverse();
+		// convert books Object to array with data, in order to get it properly:
+		let booksReversed = Object.entries(books).reverse()
+		
+		// value check:
+		//console.log(Object.keys(books));
+		//console.log(booksReversed); // get all data in array mode
+		//console.log(Object.entries(books)[0]); // get first value
+		//console.log(Object.entries(books)[0][0]); // get the global ID
+		//console.log(Object.entries(books)[0][1].author); // get author
+		
         showView('viewBooks');
         let pagination = $('#pagination-of-books');
         if(pagination.data("twbs-pagination")){
@@ -390,19 +475,19 @@ function startApplication(){
                 for (let i = startBook; i < endBook; i++) {
                     let tr = $(`<tr>`);
                     table.append(
-                        $(tr).append($(`<td>${booksReversed[i].title}</td>`))
-                             .append($(`<td>${booksReversed[i].author}</td>`))
-                             .append($(`<td>${booksReversed[i].description}</td>`))
+                        $(tr).append($(`<td>${booksReversed[i][1].title}</td>`))
+                             .append($(`<td>${booksReversed[i][1].author}</td>`))
+                             .append($(`<td>${booksReversed[i][1].description}</td>`))
                     );
-                    if(booksReversed[i]._aclcreator === sessionStorage.getItem('userId')) {
+                    if(booksReversed[i][1]._aclcreator === sessionStorage.getItem('userId')) {
                         $(tr).append(
                             $(`<td>`).append(
                                 $('<a href=\"#\" class=\"editButton\">Edit</a>').on('click', function () {
-                                    loadBookForEdit(booksReversed[i])
+                                    loadBookForEdit(booksReversed[i], token)
                                 })
                             ).append(
                                 $('<a href=\"#\" class=\"deleteButton\">Delete</a>').on('click', function () {
-                                    deleteBook(booksReversed[i])
+                                    deleteBook(booksReversed[i], token)
                                 })
                             )
                         );
