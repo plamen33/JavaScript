@@ -29,10 +29,12 @@
     <!--<section id="loadingBox">Loading...</section>-->
     <section id="errorBox" onclick="$(this).fadeOut()">Error</section>
     <section id="viewHome">
-        <h1>Welcome</h1>
-        <div>Welcome to my JS web book library.</div>
-	    <img src="images/underconst1.jpg" alt="under construction"  width="377" height="145" style="vertical-align:top; margin-top: 7%;  position: absolute">
-	    <img src="images/workinprogress.jpg" alt="work in progress"  width="377" height="177" style="vertical-align:top; margin-top: 21%;  position: absolute">
+        <h2>Welcome</h1>
+        <div style="font-size:18px;">Welcome to my JS web book library.</div>
+		<p style="font-size:21px; color:#c35c00">Recent update: Project migrated to Firebase. Some enhancements were added.</p>
+		
+	    <!--<img src="images/underconst1.jpg" alt="under construction"  width="377" height="145" style="vertical-align:top; margin-top: 7%;  position: absolute">-->
+	    <!--<img src="images/workinprogress.jpg" alt="work in progress"  width="377" height="177" style="vertical-align:top; margin-top: 21%;  position: absolute">-->
     </section>
     <section id="viewLogin">
         <h1>Please Login</h1>
@@ -66,12 +68,14 @@
                         <th>Title</th>
                         <th>Author</th>
                         <th>Description</th>
+						<th>Link</th>
                         <th>Actions</th>
                     </tr>
                     <tr>
                         <td>Book title</td>
                         <td>Book author</td>
                         <td>Book description</td>
+						<td>Book link</td>
                         <td>
                             <a href="#">[Delete]</a>
                             <a href="#">[Edit]</a>
@@ -81,6 +85,7 @@
                         <td>Book title</td>
                         <td>Book author</td>
                         <td>Book description</td>
+						<td>Book link</td>
                         <td>
                             <a href="#">[Delete]</a>
                             <a href="#">[Edit]</a>
@@ -100,11 +105,13 @@
         <h1>Create new book</h1>
         <form id="formCreateBook">
             <div>Title:</div>
-            <div><input type="text" id="bookTitle" required/></div>
+            <div><input type="text" id="bookTitle" title="Maximum 37 characters." required/></div>
             <div>Author</div>
-            <div><input type="text" id="bookAuthor" required/></div>
+            <div><input type="text" id="bookAuthor" title="Maximum 37 characters." required/></div>
             <div>Description:</div>
-            <div><textarea id="bookDescription" rows="10" title="Maximum 100 characters." required></textarea></div>
+            <div><textarea id="bookDescription" rows="10" title="Maximum 177 characters." required></textarea></div>
+			<div>Link</div>
+            <div><input type="text" id="bookLink" title="Maximum 121 characters." /></div>
             <div><input type="submit" value="Create"/></div>
         </form>
     </section>
@@ -114,11 +121,13 @@
         <form id="formEditBook">
             <div><input type="hidden" name="id" required /></div>
             <div>Title:</div>
-            <div><input type="text" name="title" required /></div>
+            <div><input type="text" name="title" title="Maximum 37 characters." required /></div>
             <div>Author:</div>
-            <div><input type="text" name="author" required /></div>
+            <div><input type="text" name="author" title="Maximum 37 characters." required /></div>
+			<div>Link</div>
+            <div><input type="text" name="link" title="Maximum 121 characters." /></div>
             <div>Description:</div>
-            <div><textarea name="description" rows="10" title="Maximum 100 characters." required></textarea></div>
+            <div><textarea name="description" rows="10" title="Maximum 177 characters." required></textarea></div>
             <div><input type="button" id="buttonEditBook" value="Edit" /></div>
         </form>
     </section>

@@ -313,6 +313,7 @@ function startApplication(){
             $('#formEditBook input[name=id]').val(book[0]); // book[0] is the ID (external ID of the record in Firebase)
             $('#formEditBook input[name=title]').val(latestBookValue.title);
             $('#formEditBook input[name=author]').val(latestBookValue.author);
+			$('#formEditBook input[name=link]').val(latestBookValue.link);
             $('#formEditBook textarea[name=description]').val(latestBookValue.description);
 
             showView('viewEditBook');
@@ -360,9 +361,10 @@ function startApplication(){
 		
 		let bookData = { 
 			_aclcreator: creatorID,
-            title: $('#bookTitle').val(),
-            author: $('#bookAuthor').val(),
-            description: $('#bookDescription').val().substr(0,100)
+            title: $('#bookTitle').val().substr(0,37),
+            author: $('#bookAuthor').val().substr(0,37),
+			link: $('#bookLink').val().substr(0,121),
+            description: $('#bookDescription').val().substr(0,177)
         };
 		//   console.log("book data : " + bookData)
 		$.ajax({
@@ -393,9 +395,10 @@ function startApplication(){
     function editBook(){
 		let token = sessionStorage.getItem('authToken');
         let bookData = {
-			title: $('#formEditBook input[name=title]').val(),
-            author: $('#formEditBook input[name=author]').val(),
-            description: $('#formEditBook textarea[name=description]').val().substr(0,100)
+			title: $('#formEditBook input[name=title]').val().substr(0,37),
+            author: $('#formEditBook input[name=author]').val().substr(0,37),
+			link: $('#formEditBook input[name=link]').val().substr(0,121),
+            description: $('#formEditBook textarea[name=description]').val().substr(0,177)
         };
 		// old kinvey call, the call was based on the id of the book:
         //$.ajax({
@@ -475,9 +478,11 @@ function startApplication(){
                 for (let i = startBook; i < endBook; i++) {
                     let tr = $(`<tr>`);
                     table.append(
-                        $(tr).append($(`<td>${booksReversed[i][1].title}</td>`))
-                             .append($(`<td>${booksReversed[i][1].author}</td>`))
-                             .append($(`<td>${booksReversed[i][1].description}</td>`))
+                        $(tr).append($(`<td>${booksReversed[i][1].title.substr(0,37)}</td>`))
+                             .append($(`<td>${booksReversed[i][1].author.substr(0,37)}</td>`))
+                             .append($(`<td>${booksReversed[i][1].description.substr(0,100)}</td>`))
+							 // target="_blank" makes link open in new tab or window
+							 .append($(`<td><a href=\"${booksReversed[i][1].link}\" target="_blank">${booksReversed[i][1].link.substr(0,33)}</a></td>`))
                     );
                     if(booksReversed[i][1]._aclcreator === sessionStorage.getItem('userId')) {
                         $(tr).append(

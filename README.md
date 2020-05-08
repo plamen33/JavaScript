@@ -2,13 +2,13 @@
 
 [ToDoList Angular Project](https://plamen33.github.io/ToDoList-Angular)
 
-[Marketplace Project](https://plamen33.github.io/Marketplace-JS/#/)  - project is temporary unavailable due to Kinvey policy
+[Marketplace Project](https://plamen33.github.io/Marketplace-JS/#/)  - project is temporary unavailable due to Kinvey policy. Migration to Firebase is planned.
 
-[Book Library Project](https://plamen33.github.io/JavaScript/BookLibrary/books.html) - migration to Firebase in progress...part of the project is available..
+[Book Library Project](https://plamen33.github.io/JavaScript/BookLibrary/books.html)  Project migrated to Firebase.
 
 [JavaScript webpainter](https://plamen33.github.io/JavaScript/webpainter.html)
 
-[Web Timer](https://plamen33.github.io/JavaScript/WebTimer/WebTimer.html)
+[Web Timer](https://plamen33.github.io/JavaScript/WebTimer/WebTimer.html)  Project migrated to Firebase.
 
 [YouTube Viewer](https://plamen33.github.io/JavaScript/YouTubeViewer/index.html)
 
