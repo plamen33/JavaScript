@@ -21,7 +21,7 @@ function startApplication(){
    const kinveyAppKey = "kid_BysPrvXlz";
    const kinveyAppSecret = "b741d837b8034ce5bd42b02c510013b5";
    
-   const BOOKS_PER_PAGE = 10;
+   const BOOKS_PER_PAGE = 8;
 
    function showView(viewId) {     // function which by name of section hides and showes the others
        $('main > section').hide(); // hide all the views
@@ -311,7 +311,8 @@ function startApplication(){
         function loadBookForEditSuccess(latestBookValue) {
 			console.log("book data loaded from DB successfully !")
             $('#formEditBook input[name=id]').val(book[0]); // book[0] is the ID (external ID of the record in Firebase)
-            $('#formEditBook input[name=title]').val(latestBookValue.title);
+            // here data is loaded from database:
+			$('#formEditBook input[name=title]').val(latestBookValue.title);
             $('#formEditBook input[name=author]').val(latestBookValue.author);
 			$('#formEditBook input[name=link]').val(latestBookValue.link);
             $('#formEditBook textarea[name=description]').val(latestBookValue.description);
@@ -361,10 +362,10 @@ function startApplication(){
 		
 		let bookData = { 
 			_aclcreator: creatorID,
-            title: $('#bookTitle').val().substr(0,37),
-            author: $('#bookAuthor').val().substr(0,37),
-			link: $('#bookLink').val().substr(0,121),
-            description: $('#bookDescription').val().substr(0,177)
+            title: $('#bookTitle').val().substr(0,77),
+            author: $('#bookAuthor').val().substr(0,77),
+			link: $('#bookLink').val().substr(0,177),
+            description: $('#bookDescription').val().substr(0,777)
         };
 		//   console.log("book data : " + bookData)
 		$.ajax({
@@ -387,18 +388,25 @@ function startApplication(){
         //    error: handleAjaxError
         //});
         function createBookSuccess(response){
+			// clear create book fields:
+			$('#bookTitle').val("");
+            $('#bookAuthor').val("");
+			$('#bookLink').val("");
+            $('#bookDescription').val("");
+		
             listBooks(token);
             showInfo('Book created.');
         }
     }
     //Math.random().toString(33).substr(2, 7) + Date.now();
+	// enter here when button is clicked on Edit form:
     function editBook(){
 		let token = sessionStorage.getItem('authToken');
         let bookData = {
-			title: $('#formEditBook input[name=title]').val().substr(0,37),
-            author: $('#formEditBook input[name=author]').val().substr(0,37),
-			link: $('#formEditBook input[name=link]').val().substr(0,121),
-            description: $('#formEditBook textarea[name=description]').val().substr(0,177)
+			title: $('#formEditBook input[name=title]').val().substr(0,77),
+            author: $('#formEditBook input[name=author]').val().substr(0,77),
+			link: $('#formEditBook input[name=link]').val().substr(0,177),
+            description: $('#formEditBook textarea[name=description]').val().substr(0,777)
         };
 		// old kinvey call, the call was based on the id of the book:
         //$.ajax({
@@ -478,9 +486,9 @@ function startApplication(){
                 for (let i = startBook; i < endBook; i++) {
                     let tr = $(`<tr>`);
                     table.append(
-                        $(tr).append($(`<td>${booksReversed[i][1].title.substr(0,37)}</td>`))
+                        $(tr).append($(`<td>${booksReversed[i][1].title.substr(0,51)}</td>`))
                              .append($(`<td>${booksReversed[i][1].author.substr(0,37)}</td>`))
-                             .append($(`<td>${booksReversed[i][1].description.substr(0,100)}</td>`))
+                             .append($(`<td>${booksReversed[i][1].description.substr(0,121)}...</td>`))
 							 // target="_blank" makes link open in new tab or window
 							 .append($(`<td><a href=\"${booksReversed[i][1].link}\" target="_blank">${booksReversed[i][1].link.substr(0,33)}</a></td>`))
                     );
