@@ -683,7 +683,7 @@ async function getTitlesFromDB(){
                 //clearInterval(intervalId);
                 time = 120;
                 let timeString = ""+time;
-                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: true};
+                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: false};
                 $.ajax({
                     method: 'PUT',
                     //url: kinveyBooksUrl + "/" + idOfTime,   - this is the old kinvey url
@@ -699,7 +699,7 @@ async function getTitlesFromDB(){
                 //clearInterval(intervalId);
                 time = 180;
                 let timeString = ""+time;
-                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: true};
+                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: false};
                 $.ajax({
                     method: 'PUT',
                     //url: kinveyBooksUrl + "/" + idOfTime,   - this is the old kinvey url
@@ -715,7 +715,7 @@ async function getTitlesFromDB(){
                 //clearInterval(intervalId);
                 time = 300;
                 let timeString = ""+time;
-                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: true};
+                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: false};
                 $.ajax({
                     method: 'PUT',
                     //url: kinveyBooksUrl + "/" + idOfTime,   - this is the old kinvey url
@@ -733,7 +733,7 @@ async function getTitlesFromDB(){
                 //clearInterval(intervalId);
                 time = $('#minutesValue').val();
                 let timeString = ""+time;
-                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: true};
+                let changeTime ={"_id": "33FFC12", seconds: timeString, isrunning: false};
                 $.ajax({
                     method: 'PUT',
                     //url: kinveyBooksUrl + "/" + idOfTime,   - this is the old kinvey url
